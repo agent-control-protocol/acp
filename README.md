@@ -148,7 +148,7 @@ The agent sees the manifest, understands the UI, and operates it with structured
 
 ACP is a protocol specification, not a product. Anyone can implement an ACP-compliant engine (the agent side) or SDK (the application side). The protocol defines the contract between them.
 
-The first production implementation is [Vocall Engine](https://github.com/primoia/primoia-vocall-engine), which powers ACP alongside voice interaction.
+The first production implementation is [Vocall Engine](https://primoia.ai) by Primoia, which powers ACP alongside voice interaction.
 
 ## Specification
 
@@ -163,9 +163,9 @@ The first production implementation is [Vocall Engine](https://github.com/primoi
 
 | Implementation | Type | Platform | Status |
 |---|---|---|---|
-| [Vocall Engine](https://github.com/primoia/primoia-vocall-engine) | Server | Go | Production |
-| [@primoia/vocall-react](https://www.npmjs.com/package/@primoia/vocall-react) | SDK | React / Next.js | Production |
-| [vocall_sdk](https://pub.dev/packages/vocall_sdk) | SDK | Flutter | Production |
+| [Vocall Engine](https://primoia.ai) by Primoia | Server | Go | Production |
+| [vocall_sdk](https://pub.dev/packages/vocall_sdk) by Primoia | SDK | Flutter | Production |
+| [vocall-react](https://primoia.ai) by Primoia | SDK | React / Next.js | Production |
 
 Building an ACP implementation? Open a PR to add it to this table.
 

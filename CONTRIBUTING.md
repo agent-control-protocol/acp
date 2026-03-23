@@ -41,9 +41,9 @@ This project follows the [Contributor Covenant Code of Conduct](https://www.cont
 
 ## Getting Help
 
-If you have questions about the spec, the conformance suite, or anything else related to ACP, head over to [GitHub Discussions](https://github.com/primoia/acp-protocol/discussions). That is the best place for open-ended questions, design ideas, and community conversation.
+If you have questions about the spec, the conformance suite, or anything else related to ACP, head over to [GitHub Discussions](https://github.com/agent-control-protocol/acp/discussions). That is the best place for open-ended questions, design ideas, and community conversation.
 
-For bug reports and concrete proposals, use [GitHub Issues](https://github.com/primoia/acp-protocol/issues).
+For bug reports and concrete proposals, use [GitHub Issues](https://github.com/agent-control-protocol/acp/issues).
 
 ## License
 

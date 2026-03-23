@@ -45,7 +45,7 @@ We're open-sourcing ACP (Agent Control Protocol), a protocol specification that 
 
 - Spec + repo: https://github.com/agent-control-protocol/acp
 - Website: https://acp-protocol.org
-- First production implementation (Go engine): https://github.com/primoia/primoia-vocall-engine
+- First production implementation (Go engine): https://primoia.ai
 
 **What we'd love feedback on:**
 
