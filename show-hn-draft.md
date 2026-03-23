@@ -2,15 +2,9 @@
 
 ---
 
-## Title (primary)
+## Title
 
-**Show HN: ACP -- Open protocol for AI agents to operate existing application UIs**
-
-## Alternative Titles
-
-1. **Show HN: ACP -- A protocol that lets AI agents fill forms, click buttons, and navigate apps**
-2. **Show HN: ACP -- Structured protocol for agents to control live application interfaces**
-3. **Show HN: ACP -- The missing protocol between AI agents and existing UIs**
+**Show HN: ACP -- Open protocol for AI agents to fill forms, click buttons, and navigate existing UIs**
 
 ---
 
@@ -32,7 +26,7 @@ We're open-sourcing ACP (Agent Control Protocol), a protocol specification that 
 - Conformance test suite for validating implementations
 - Apache 2.0 license
 
-**Why we built this:** We built ACP for our own product (Emitta, an invoicing/ERP platform in Brazil) where an AI agent helps users fill tax forms by voice and text. We've been running it in production. After watching the agent-protocol ecosystem grow -- MCP, A2A, AG-UI, A2UI -- with nobody addressing "operate existing UI," we decided to extract the protocol and open the spec.
+**Why we built this:** We built ACP for our own product (Emitta, an invoicing/ERP platform in Brazil) where an AI agent helps users navigate forms and complete workflows. We've been running it in production. After watching the agent-protocol ecosystem grow -- MCP, A2A, AG-UI, A2UI -- with nobody addressing "operate existing UI," we decided to extract the protocol and open the spec.
 
 **How it compares to alternatives:**
 
@@ -45,7 +39,7 @@ We're open-sourcing ACP (Agent Control Protocol), a protocol specification that 
 
 - Spec + repo: https://github.com/agent-control-protocol/acp
 - Website: https://acp-protocol.org
-- First production implementation (Go engine): https://primoia.ai
+- Live demo (AI-assisted forms): https://primoia.ai
 
 **What we'd love feedback on:**
 
