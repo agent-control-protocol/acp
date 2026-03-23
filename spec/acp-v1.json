@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acp-protocol.org/schemas/acp-v1.json",
+  "title": "Agent Control Protocol (ACP) v1",
+  "description": "Agent Control Protocol v1 — an open protocol for AI agents to control existing application user interfaces. This schema defines all WebSocket messages exchanged between an ACP-compliant engine and SDK on the /connect channel.",
+  "$comment": "Extensions: Implementations MAY extend the status enum and message types to support additional capabilities such as voice interaction. Use additionalProperties where marked to add extension fields.",
+
+  "oneOf": [
+    { "$ref": "#/$defs/ClientMessage" },
+    { "$ref": "#/$defs/ServerMessage" }
+  ],
+
+  "$defs": {
+
+    "ClientMessage": {
+      "description": "Union of all messages sent from SDK (client) to Engine (server).",
+      "oneOf": [
+        { "$ref": "#/$defs/ManifestMessage" },
+        { "$ref": "#/$defs/TextMessage" },
+        { "$ref": "#/$defs/StateMessage" },
+        { "$ref": "#/$defs/ResultMessage" },
+        { "$ref": "#/$defs/ConfirmMessage" },
+        { "$ref": "#/$defs/LlmConfigMessage" },
+        { "$ref": "#/$defs/ResponseLangConfigMessage" }
+      ]
+    },
+
+    "ServerMessage": {
+      "description": "Union of all messages sent from Engine (server) to SDK (client).",
+      "oneOf": [
+        { "$ref": "#/$defs/ConfigResponse" },
+        { "$ref": "#/$defs/CommandMessage" },
+        { "$ref": "#/$defs/ChatMessage" },
+        { "$ref": "#/$defs/ChatTokenMessage" },
+        { "$ref": "#/$defs/StatusMessage" },
+        { "$ref": "#/$defs/ErrorMessage" }
+      ]
+    },
+
+    "ManifestMessage": {
+      "type": "object",
+      "description": "SDK → Engine: Initial manifest describing the application UI.",
+      "required": ["type", "app", "screens"],
+      "properties": {
+        "type": { "const": "manifest" },
+        "app": { "type": "string", "minLength": 1 },
+        "version": { "type": "string" },
+        "currentScreen": { "type": "string" },
+        "screens": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/ScreenDescriptor" }
+        },
+        "user": { "$ref": "#/$defs/UserInfo" },
+        "context": { "type": "object" },
+        "persona": { "$ref": "#/$defs/Persona" }
+      },
+      "additionalProperties": false
+    },
+
+    "TextMessage": {
+      "type": "object",
+      "description": "SDK → Engine: User chat message.",
+      "required": ["type", "message"],
+      "properties": {
+        "type": { "const": "text" },
+        "message": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+
+    "StateMessage": {
+      "type": "object",
+      "description": "SDK → Engine: Current screen field state.",
+      "required": ["type", "screen"],
+      "properties": {
+        "type": { "const": "state" },
+        "screen": { "type": "string" },
+        "fields": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/FieldState" }
+        },
+        "canSubmit": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+
+    "ResultMessage": {
+      "type": "object",
+      "description": "SDK → Engine: Action execution results.",
+      "required": ["type", "seq", "results"],
+      "properties": {
+        "type": { "const": "result" },
+        "seq": { "type": "integer", "minimum": 0 },
+        "results": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ActionResult" }
+        },
+        "state": { "$ref": "#/$defs/InlineState" }
+      },
+      "additionalProperties": false
+    },
+
+    "ConfirmMessage": {
+      "type": "object",
+      "description": "SDK → Engine: User response to ask_confirm.",
+      "required": ["type", "seq", "confirmed"],
+      "properties": {
+        "type": { "const": "confirm" },
+        "seq": { "type": "integer", "minimum": 0 },
+        "confirmed": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+
+    "LlmConfigMessage": {
+      "type": "object",
+      "description": "SDK → Engine: Switch LLM provider.",
+      "required": ["type", "provider"],
+      "properties": {
+        "type": { "const": "llm_config" },
+        "provider": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "ResponseLangConfigMessage": {
+      "type": "object",
+      "description": "SDK → Engine: Switch response language.",
+      "required": ["type", "language"],
+      "properties": {
+        "type": { "const": "response_lang_config" },
+        "language": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "ConfigResponse": {
+      "type": "object",
+      "description": "Engine → SDK: Session config sent on connection.",
+      "required": ["type", "sessionId"],
+      "properties": {
+        "type": { "const": "config" },
+        "sessionId": { "type": "string" },
+        "features": {
+          "type": "object",
+          "properties": {
+            "chat": { "type": "boolean" }
+          },
+          "additionalProperties": true
+        },
+        "providers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ProviderInfo" }
+        },
+        "current_provider": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "CommandMessage": {
+      "type": "object",
+      "description": "Engine → SDK: UI action commands to execute.",
+      "required": ["type", "seq", "actions"],
+      "properties": {
+        "type": { "const": "command" },
+        "seq": { "type": "integer", "minimum": 0 },
+        "actions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UIAction" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "ChatMessage": {
+      "type": "object",
+      "description": "Engine → SDK: Agent chat message.",
+      "required": ["type", "from", "message"],
+      "properties": {
+        "type": { "const": "chat" },
+        "from": { "type": "string", "enum": ["agent", "user", "system"] },
+        "message": { "type": "string" },
+        "final": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+
+    "ChatTokenMessage": {
+      "type": "object",
+      "description": "Engine → SDK: Streaming chat token.",
+      "required": ["type", "token"],
+      "properties": {
+        "type": { "const": "chat_token" },
+        "token": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "StatusMessage": {
+      "type": "object",
+      "description": "Engine → SDK: Agent status update.",
+      "required": ["type", "status"],
+      "properties": {
+        "type": { "const": "status" },
+        "status": {
+          "type": "string",
+          "enum": ["idle", "thinking", "executing"]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "ErrorMessage": {
+      "type": "object",
+      "description": "Engine → SDK: Error notification.",
+      "required": ["type", "message"],
+      "properties": {
+        "type": { "const": "error" },
+        "code": { "type": "string" },
+        "message": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "UIAction": {
+      "type": "object",
+      "description": "A single UI action within a command. Discriminated by the 'do' field.",
+      "required": ["do"],
+      "properties": {
+        "do": {
+          "type": "string",
+          "enum": [
+            "navigate", "fill", "clear", "select", "click",
+            "highlight", "focus", "scroll_to", "show_toast",
+            "ask_confirm", "open_modal", "close_modal",
+            "enable", "disable"
+          ]
+        },
+        "screen": { "type": "string" },
+        "field": { "type": "string" },
+        "action": { "type": "string" },
+        "modal": { "type": "string" },
+        "value": {},
+        "query": { "type": "string" },
+        "message": { "type": "string" },
+        "animate": { "type": "string", "enum": ["typewriter", "count_up", "fade_in", "none"] },
+        "speed": { "type": "integer", "minimum": 1 },
+        "duration": { "type": "integer", "minimum": 0 },
+        "level": { "type": "string", "enum": ["info", "success", "warning", "error"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "do": { "const": "navigate" } } }, "then": { "required": ["screen"] } },
+        { "if": { "properties": { "do": { "const": "fill" } } }, "then": { "required": ["field", "value"] } },
+        { "if": { "properties": { "do": { "const": "clear" } } }, "then": { "required": ["field"] } },
+        { "if": { "properties": { "do": { "const": "select" } } }, "then": { "required": ["field", "value"] } },
+        { "if": { "properties": { "do": { "const": "click" } } }, "then": { "required": ["action"] } },
+        { "if": { "properties": { "do": { "const": "highlight" } } }, "then": { "required": ["field"] } },
+        { "if": { "properties": { "do": { "const": "focus" } } }, "then": { "required": ["field"] } },
+        { "if": { "properties": { "do": { "const": "scroll_to" } } }, "then": { "required": ["field"] } },
+        { "if": { "properties": { "do": { "const": "show_toast" } } }, "then": { "required": ["message"] } },
+        { "if": { "properties": { "do": { "const": "ask_confirm" } } }, "then": { "required": ["message"] } },
+        { "if": { "properties": { "do": { "const": "open_modal" } } }, "then": { "required": ["modal"] } }
+      ],
+      "additionalProperties": false
+    },
+
+    "ScreenDescriptor": {
+      "type": "object",
+      "required": ["id", "label"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "route": { "type": "string" },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/FieldDescriptor" } },
+        "actions": { "type": "array", "items": { "$ref": "#/$defs/ActionDescriptor" } },
+        "modals": { "type": "array", "items": { "$ref": "#/$defs/ModalDescriptor" } }
+      },
+      "additionalProperties": false
+    },
+
+    "FieldDescriptor": {
+      "type": "object",
+      "required": ["id", "type", "label"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": {
+          "type": "string",
+          "enum": [
+            "text", "number", "currency", "date", "datetime", "email", "phone",
+            "masked", "select", "autocomplete", "checkbox", "radio", "textarea", "file", "hidden"
+          ]
+        },
+        "label": { "type": "string" },
+        "required": { "type": "boolean" },
+        "mask": { "type": "string" },
+        "placeholder": { "type": "string" },
+        "options": { "type": "array", "items": { "$ref": "#/$defs/SelectOption" } },
+        "source": { "type": "string" },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "maxLength": { "type": "integer", "minimum": 0 },
+        "readOnly": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+
+    "SelectOption": {
+      "type": "object",
+      "required": ["value", "label"],
+      "properties": {
+        "value": { "type": "string" },
+        "label": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "ActionDescriptor": {
+      "type": "object",
+      "required": ["id", "label"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "requiresConfirmation": { "type": "boolean" },
+        "destructive": { "type": "boolean" },
+        "disabled": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+
+    "ModalDescriptor": {
+      "type": "object",
+      "required": ["id", "label"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "searchable": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+
+    "UserInfo": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "org": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+
+    "Persona": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "instructions": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+
+    "ProviderInfo": {
+      "type": "object",
+      "required": ["id", "name", "model"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "model": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "FieldState": {
+      "type": "object",
+      "properties": {
+        "value": {},
+        "valid": { "type": "boolean" },
+        "error": { "type": "string" },
+        "dirty": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+
+    "ActionResult": {
+      "type": "object",
+      "required": ["index", "success"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 0 },
+        "success": { "type": "boolean" },
+        "error": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "InlineState": {
+      "type": "object",
+      "description": "State snapshot embedded in result messages (no type field).",
+      "properties": {
+        "screen": { "type": "string" },
+        "fields": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/FieldState" }
+        },
+        "canSubmit": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,257 @@
+{
+  "id": "nav-actions",
+  "name": "Navigate, Click, ScrollTo, and Focus Actions",
+  "description": "Tests navigate, click, scroll_to, and focus actions",
+  "steps": [
+    {
+      "direction": "server_to_client",
+      "description": "Server sends config with OpenAI provider",
+      "message": {
+        "type": "config",
+        "sessionId": "session-nav-001",
+        "features": {
+          "chat": true
+        },
+        "providers": [
+          {
+            "id": "openai",
+            "name": "OpenAI GPT-4o",
+            "model": "gpt-4o"
+          }
+        ],
+        "current_provider": "openai"
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client sends manifest with dashboard and deals screens",
+      "message": {
+        "type": "manifest",
+        "app": "crm-demo",
+        "version": "1.0.0",
+        "currentScreen": "dashboard",
+        "screens": {
+          "dashboard": {
+            "id": "dashboard",
+            "label": "Dashboard",
+            "route": "/dashboard",
+            "fields": [],
+            "actions": [],
+            "modals": []
+          },
+          "deals": {
+            "id": "deals",
+            "label": "New Deal",
+            "route": "/deals",
+            "fields": [
+              {
+                "id": "contact",
+                "type": "autocomplete",
+                "label": "Contact",
+                "required": true,
+                "source": "api/contacts"
+              },
+              {
+                "id": "stage",
+                "type": "select",
+                "label": "Pipeline Stage",
+                "required": true,
+                "options": [
+                  {
+                    "value": "lead",
+                    "label": "Lead"
+                  },
+                  {
+                    "value": "qualified",
+                    "label": "Qualified"
+                  },
+                  {
+                    "value": "proposal",
+                    "label": "Proposal Sent"
+                  }
+                ]
+              },
+              {
+                "id": "amount",
+                "type": "currency",
+                "label": "Deal Amount",
+                "required": true,
+                "min": 0.01
+              },
+              {
+                "id": "notes",
+                "type": "textarea",
+                "label": "Notes",
+                "required": true,
+                "maxLength": 2000
+              }
+            ],
+            "actions": [
+              {
+                "id": "create_deal",
+                "label": "Create Deal",
+                "requiresConfirmation": true
+              },
+              {
+                "id": "cancel_deal",
+                "label": "Cancel"
+              }
+            ],
+            "modals": [
+              {
+                "id": "contact_picker",
+                "label": "Select Contact",
+                "searchable": true
+              }
+            ]
+          }
+        },
+        "user": {
+          "name": "Alice Johnson",
+          "email": "alice@example.com",
+          "org": "Acme Corp",
+          "role": "sales_manager"
+        },
+        "persona": {
+          "name": "Aria",
+          "role": "CRM assistant",
+          "instructions": "You are a CRM assistant that helps manage contacts, deals, and sales pipelines."
+        }
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "User requests to navigate to the new deal screen",
+      "message": {
+        "type": "text",
+        "message": "I want to create a new deal"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server transitions to thinking status",
+      "message": {
+        "type": "status",
+        "status": "thinking"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends chat message indicating navigation intent",
+      "message": {
+        "type": "chat",
+        "from": "agent",
+        "message": "I'll take you to the new deal form.",
+        "final": true
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server transitions to executing status",
+      "message": {
+        "type": "status",
+        "status": "executing"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends navigate command to the deals screen",
+      "message": {
+        "type": "command",
+        "seq": 1,
+        "actions": [
+          {
+            "do": "navigate",
+            "screen": "deals"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client confirms navigation succeeded",
+      "message": {
+        "type": "result",
+        "seq": 1,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends scroll_to and focus on the contact field in parallel",
+      "message": {
+        "type": "command",
+        "seq": 2,
+        "actions": [
+          {
+            "do": "scroll_to",
+            "field": "contact"
+          },
+          {
+            "do": "focus",
+            "field": "contact"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client confirms scroll_to and focus both succeeded",
+      "message": {
+        "type": "result",
+        "seq": 2,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          },
+          {
+            "index": 1,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends click action on the cancel button",
+      "message": {
+        "type": "command",
+        "seq": 3,
+        "actions": [
+          {
+            "do": "click",
+            "action": "cancel_deal"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client confirms click action succeeded",
+      "message": {
+        "type": "result",
+        "seq": 3,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server returns to idle status after all commands complete",
+      "message": {
+        "type": "status",
+        "status": "idle"
+      }
+    }
+  ]
+}

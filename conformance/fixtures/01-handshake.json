@@ -1,0 +1,203 @@
+{
+  "id": "handshake",
+  "name": "Connection Handshake",
+  "description": "Tests the initial connection handshake: config, manifest, status, greeting",
+  "steps": [
+    {
+      "direction": "server_to_client",
+      "description": "Server sends config with session ID, features, and LLM providers",
+      "message": {
+        "type": "config",
+        "sessionId": "session-handshake-001",
+        "features": {
+          "chat": true
+        },
+        "providers": [
+          {
+            "id": "anthropic",
+            "name": "Anthropic Claude",
+            "model": "claude-sonnet-4-5-20250929"
+          },
+          {
+            "id": "deepseek",
+            "name": "DeepSeek R1",
+            "model": "deepseek-chat"
+          }
+        ],
+        "current_provider": "anthropic"
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client sends a 4-screen CRM manifest with user and persona",
+      "message": {
+        "type": "manifest",
+        "app": "crm-demo",
+        "version": "1.0.0",
+        "currentScreen": "dashboard",
+        "screens": {
+          "dashboard": {
+            "id": "dashboard",
+            "label": "Dashboard",
+            "route": "/dashboard",
+            "fields": [],
+            "actions": [],
+            "modals": []
+          },
+          "contacts": {
+            "id": "contacts",
+            "label": "Contacts",
+            "route": "/contacts",
+            "fields": [
+              {
+                "id": "search",
+                "type": "text",
+                "label": "Search"
+              },
+              {
+                "id": "email",
+                "type": "email",
+                "label": "Email"
+              }
+            ],
+            "actions": [
+              {
+                "id": "new_contact",
+                "label": "New Contact"
+              }
+            ],
+            "modals": []
+          },
+          "deals": {
+            "id": "deals",
+            "label": "New Deal",
+            "route": "/deals",
+            "fields": [
+              {
+                "id": "contact",
+                "type": "autocomplete",
+                "label": "Contact",
+                "required": true,
+                "source": "api/contacts"
+              },
+              {
+                "id": "stage",
+                "type": "select",
+                "label": "Pipeline Stage",
+                "required": true,
+                "options": [
+                  {
+                    "value": "lead",
+                    "label": "Lead"
+                  },
+                  {
+                    "value": "qualified",
+                    "label": "Qualified"
+                  },
+                  {
+                    "value": "proposal",
+                    "label": "Proposal Sent"
+                  }
+                ]
+              },
+              {
+                "id": "amount",
+                "type": "currency",
+                "label": "Deal Amount",
+                "required": true,
+                "min": 0.01
+              },
+              {
+                "id": "notes",
+                "type": "textarea",
+                "label": "Notes",
+                "required": true,
+                "maxLength": 2000
+              }
+            ],
+            "actions": [
+              {
+                "id": "create_deal",
+                "label": "Create Deal",
+                "requiresConfirmation": true
+              },
+              {
+                "id": "cancel_deal",
+                "label": "Cancel"
+              }
+            ],
+            "modals": [
+              {
+                "id": "contact_picker",
+                "label": "Select Contact",
+                "searchable": true
+              }
+            ]
+          },
+          "settings": {
+            "id": "settings",
+            "label": "Settings",
+            "route": "/settings",
+            "fields": [
+              {
+                "id": "company_name",
+                "type": "text",
+                "label": "Company Name"
+              },
+              {
+                "id": "timezone",
+                "type": "select",
+                "label": "Timezone",
+                "options": [
+                  {
+                    "value": "utc",
+                    "label": "UTC"
+                  },
+                  {
+                    "value": "us_eastern",
+                    "label": "US Eastern"
+                  },
+                  {
+                    "value": "us_pacific",
+                    "label": "US Pacific"
+                  }
+                ]
+              }
+            ],
+            "actions": [],
+            "modals": []
+          }
+        },
+        "user": {
+          "name": "Alice Johnson",
+          "email": "alice@example.com",
+          "org": "Acme Corp",
+          "role": "sales_manager"
+        },
+        "persona": {
+          "name": "Aria",
+          "role": "CRM assistant",
+          "instructions": "You are a CRM assistant that helps manage contacts, deals, and sales pipelines."
+        }
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server confirms it is ready with idle status",
+      "message": {
+        "type": "status",
+        "status": "idle"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends greeting chat message from the agent persona",
+      "message": {
+        "type": "chat",
+        "from": "agent",
+        "message": "Hi Alice! I'm Aria, your CRM assistant. How can I help you today?",
+        "final": true
+      }
+    }
+  ]
+}

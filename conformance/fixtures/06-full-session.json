@@ -1,0 +1,558 @@
+{
+  "id": "full-session",
+  "name": "Complete Deal Creation Session",
+  "description": "A complete realistic CRM deal creation session combining all action types",
+  "steps": [
+    {
+      "direction": "server_to_client",
+      "description": "Server sends config with session ID, features (chat only), and multiple LLM providers",
+      "message": {
+        "type": "config",
+        "sessionId": "session-full-001",
+        "features": {
+          "chat": true
+        },
+        "providers": [
+          {
+            "id": "anthropic",
+            "name": "Anthropic Claude",
+            "model": "claude-sonnet-4-5-20250929"
+          },
+          {
+            "id": "deepseek",
+            "name": "DeepSeek R1",
+            "model": "deepseek-chat"
+          }
+        ],
+        "current_provider": "anthropic"
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client sends the full 4-screen CRM manifest with user and persona",
+      "message": {
+        "type": "manifest",
+        "app": "crm-demo",
+        "version": "1.0.0",
+        "currentScreen": "dashboard",
+        "screens": {
+          "dashboard": {
+            "id": "dashboard",
+            "label": "Dashboard",
+            "route": "/dashboard",
+            "fields": [],
+            "actions": [],
+            "modals": []
+          },
+          "contacts": {
+            "id": "contacts",
+            "label": "Contacts",
+            "route": "/contacts",
+            "fields": [
+              {
+                "id": "search",
+                "type": "text",
+                "label": "Search"
+              },
+              {
+                "id": "email",
+                "type": "email",
+                "label": "Email"
+              }
+            ],
+            "actions": [
+              {
+                "id": "new_contact",
+                "label": "New Contact"
+              }
+            ],
+            "modals": []
+          },
+          "deals": {
+            "id": "deals",
+            "label": "New Deal",
+            "route": "/deals",
+            "fields": [
+              {
+                "id": "contact",
+                "type": "autocomplete",
+                "label": "Contact",
+                "required": true,
+                "source": "api/contacts"
+              },
+              {
+                "id": "stage",
+                "type": "select",
+                "label": "Pipeline Stage",
+                "required": true,
+                "options": [
+                  {
+                    "value": "lead",
+                    "label": "Lead"
+                  },
+                  {
+                    "value": "qualified",
+                    "label": "Qualified"
+                  },
+                  {
+                    "value": "proposal",
+                    "label": "Proposal Sent"
+                  }
+                ]
+              },
+              {
+                "id": "amount",
+                "type": "currency",
+                "label": "Deal Amount",
+                "required": true,
+                "min": 0.01
+              },
+              {
+                "id": "notes",
+                "type": "textarea",
+                "label": "Notes",
+                "required": true,
+                "maxLength": 2000
+              }
+            ],
+            "actions": [
+              {
+                "id": "create_deal",
+                "label": "Create Deal",
+                "requiresConfirmation": true
+              },
+              {
+                "id": "cancel_deal",
+                "label": "Cancel"
+              }
+            ],
+            "modals": [
+              {
+                "id": "contact_picker",
+                "label": "Select Contact",
+                "searchable": true
+              }
+            ]
+          },
+          "settings": {
+            "id": "settings",
+            "label": "Settings",
+            "route": "/settings",
+            "fields": [
+              {
+                "id": "company_name",
+                "type": "text",
+                "label": "Company Name"
+              },
+              {
+                "id": "timezone",
+                "type": "select",
+                "label": "Timezone",
+                "options": [
+                  {
+                    "value": "utc",
+                    "label": "UTC"
+                  },
+                  {
+                    "value": "us_eastern",
+                    "label": "US Eastern"
+                  },
+                  {
+                    "value": "us_pacific",
+                    "label": "US Pacific"
+                  }
+                ]
+              }
+            ],
+            "actions": [],
+            "modals": []
+          }
+        },
+        "user": {
+          "name": "Alice Johnson",
+          "email": "alice@example.com",
+          "org": "Acme Corp",
+          "role": "sales_manager"
+        },
+        "persona": {
+          "name": "Aria",
+          "role": "CRM assistant",
+          "instructions": "You are a CRM assistant that helps manage contacts, deals, and sales pipelines."
+        }
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server confirms it is ready with idle status",
+      "message": {
+        "type": "status",
+        "status": "idle"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends greeting chat message from the agent persona",
+      "message": {
+        "type": "chat",
+        "from": "agent",
+        "message": "Hi Alice! I'm Aria, your CRM assistant. How can I help you today?",
+        "final": true
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "User sends a text message requesting deal creation",
+      "message": {
+        "type": "text",
+        "message": "Create a deal for Initech Corp, consulting services lead stage, $5,000"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server transitions to thinking status while processing the request",
+      "message": {
+        "type": "status",
+        "status": "thinking"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server streams first chat token",
+      "message": {
+        "type": "chat_token",
+        "token": "I'll "
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server streams second chat token",
+      "message": {
+        "type": "chat_token",
+        "token": "set up "
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server streams third chat token",
+      "message": {
+        "type": "chat_token",
+        "token": "the deal now."
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends the final assembled chat message",
+      "message": {
+        "type": "chat",
+        "from": "agent",
+        "message": "I'll set up the deal now.",
+        "final": true
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server transitions to executing status before running commands",
+      "message": {
+        "type": "status",
+        "status": "executing"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server navigates to the deals screen",
+      "message": {
+        "type": "command",
+        "seq": 1,
+        "actions": [
+          {
+            "do": "navigate",
+            "screen": "deals"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports navigation completed successfully",
+      "message": {
+        "type": "result",
+        "seq": 1,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server fills all deal fields in parallel with animations",
+      "message": {
+        "type": "command",
+        "seq": 2,
+        "actions": [
+          {
+            "do": "fill",
+            "field": "contact",
+            "value": "Initech Corporation",
+            "animate": "typewriter",
+            "speed": 25
+          },
+          {
+            "do": "select",
+            "field": "stage",
+            "value": "lead"
+          },
+          {
+            "do": "fill",
+            "field": "amount",
+            "value": 5000.00,
+            "animate": "count_up"
+          },
+          {
+            "do": "fill",
+            "field": "notes",
+            "value": "Consulting services engagement, initial discovery phase per contract #2024-001",
+            "animate": "typewriter",
+            "speed": 20
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports all fields filled successfully with current form state",
+      "message": {
+        "type": "result",
+        "seq": 2,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          },
+          {
+            "index": 1,
+            "success": true
+          },
+          {
+            "index": 2,
+            "success": true
+          },
+          {
+            "index": 3,
+            "success": true
+          }
+        ],
+        "state": {
+          "screen": "deals",
+          "fields": {
+            "contact": {
+              "value": "Initech Corporation",
+              "valid": true,
+              "dirty": true
+            },
+            "stage": {
+              "value": "lead",
+              "valid": true,
+              "dirty": true
+            },
+            "amount": {
+              "value": 5000.00,
+              "valid": true,
+              "dirty": true
+            },
+            "notes": {
+              "value": "Consulting services engagement, initial discovery phase per contract #2024-001",
+              "valid": true,
+              "dirty": true
+            }
+          },
+          "canSubmit": true
+        }
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server highlights the contact field to draw user attention",
+      "message": {
+        "type": "command",
+        "seq": 3,
+        "actions": [
+          {
+            "do": "highlight",
+            "field": "contact",
+            "duration": 1500
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports highlight completed successfully",
+      "message": {
+        "type": "result",
+        "seq": 3,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server scrolls to and focuses the notes field",
+      "message": {
+        "type": "command",
+        "seq": 4,
+        "actions": [
+          {
+            "do": "scroll_to",
+            "field": "notes"
+          },
+          {
+            "do": "focus",
+            "field": "notes"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports scroll and focus completed successfully",
+      "message": {
+        "type": "result",
+        "seq": 4,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          },
+          {
+            "index": 1,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends chat message asking for creation confirmation",
+      "message": {
+        "type": "chat",
+        "from": "agent",
+        "message": "Deal details filled in. Shall I create the deal?",
+        "final": true
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server asks for user confirmation before creating the deal",
+      "message": {
+        "type": "command",
+        "seq": 5,
+        "actions": [
+          {
+            "do": "ask_confirm",
+            "message": "Create deal for Initech Corp with an amount of $5,000.00?"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "User confirms the deal creation",
+      "message": {
+        "type": "confirm",
+        "seq": 5,
+        "confirmed": true
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server transitions to executing status for the creation action",
+      "message": {
+        "type": "status",
+        "status": "executing"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server clicks the create_deal action button",
+      "message": {
+        "type": "command",
+        "seq": 6,
+        "actions": [
+          {
+            "do": "click",
+            "action": "create_deal"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports create action clicked successfully",
+      "message": {
+        "type": "result",
+        "seq": 6,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server shows a success toast with the deal ID",
+      "message": {
+        "type": "command",
+        "seq": 7,
+        "actions": [
+          {
+            "do": "show_toast",
+            "message": "Deal #54321 created successfully!",
+            "level": "success",
+            "duration": 5000
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports toast shown successfully",
+      "message": {
+        "type": "result",
+        "seq": 7,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends final success chat message with the deal ID",
+      "message": {
+        "type": "chat",
+        "from": "agent",
+        "message": "Deal created successfully! Deal ID: 54321.",
+        "final": true
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server returns to idle status after completing the session",
+      "message": {
+        "type": "status",
+        "status": "idle"
+      }
+    }
+  ]
+}

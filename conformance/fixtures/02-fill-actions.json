@@ -1,0 +1,298 @@
+{
+  "id": "fill-actions",
+  "name": "Fill, Clear, and Select Actions",
+  "description": "Tests fill with typewriter/count_up animation, select, and clear actions",
+  "steps": [
+    {
+      "direction": "server_to_client",
+      "description": "Server sends config with OpenAI provider",
+      "message": {
+        "type": "config",
+        "sessionId": "session-fill-001",
+        "features": {
+          "chat": true
+        },
+        "providers": [
+          {
+            "id": "openai",
+            "name": "OpenAI GPT-4o",
+            "model": "gpt-4o"
+          }
+        ],
+        "current_provider": "openai"
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client sends simplified manifest with only the deals screen",
+      "message": {
+        "type": "manifest",
+        "app": "crm-demo",
+        "version": "1.0.0",
+        "currentScreen": "deals",
+        "screens": {
+          "deals": {
+            "id": "deals",
+            "label": "New Deal",
+            "route": "/deals",
+            "fields": [
+              {
+                "id": "contact",
+                "type": "autocomplete",
+                "label": "Contact",
+                "required": true,
+                "source": "api/contacts"
+              },
+              {
+                "id": "stage",
+                "type": "select",
+                "label": "Pipeline Stage",
+                "required": true,
+                "options": [
+                  {
+                    "value": "lead",
+                    "label": "Lead"
+                  },
+                  {
+                    "value": "qualified",
+                    "label": "Qualified"
+                  },
+                  {
+                    "value": "proposal",
+                    "label": "Proposal Sent"
+                  }
+                ]
+              },
+              {
+                "id": "amount",
+                "type": "currency",
+                "label": "Deal Amount",
+                "required": true,
+                "min": 0.01
+              },
+              {
+                "id": "notes",
+                "type": "textarea",
+                "label": "Notes",
+                "required": true,
+                "maxLength": 2000
+              }
+            ],
+            "actions": [
+              {
+                "id": "create_deal",
+                "label": "Create Deal",
+                "requiresConfirmation": true
+              },
+              {
+                "id": "cancel_deal",
+                "label": "Cancel"
+              }
+            ],
+            "modals": [
+              {
+                "id": "contact_picker",
+                "label": "Select Contact",
+                "searchable": true
+              }
+            ]
+          }
+        },
+        "user": {
+          "name": "Alice Johnson",
+          "email": "alice@example.com",
+          "org": "Acme Corp",
+          "role": "sales_manager"
+        },
+        "persona": {
+          "name": "Aria",
+          "role": "CRM assistant",
+          "instructions": "You are a CRM assistant that helps manage contacts, deals, and sales pipelines."
+        }
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "User sends a text command to fill in a new deal",
+      "message": {
+        "type": "text",
+        "message": "Create a deal for Globex Corp, qualified stage, amount 2500"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server transitions to thinking status",
+      "message": {
+        "type": "status",
+        "status": "thinking"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends acknowledgement chat before executing",
+      "message": {
+        "type": "chat",
+        "from": "agent",
+        "message": "I'll fill in the deal details now.",
+        "final": true
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server transitions to executing status",
+      "message": {
+        "type": "status",
+        "status": "executing"
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends command with fill (typewriter + count_up), select, and fill actions",
+      "message": {
+        "type": "command",
+        "seq": 1,
+        "actions": [
+          {
+            "do": "fill",
+            "field": "contact",
+            "value": "Globex Corporation",
+            "animate": "typewriter",
+            "speed": 30
+          },
+          {
+            "do": "select",
+            "field": "stage",
+            "value": "qualified"
+          },
+          {
+            "do": "fill",
+            "field": "amount",
+            "value": 2500.00,
+            "animate": "count_up"
+          },
+          {
+            "do": "fill",
+            "field": "notes",
+            "value": "Enterprise software license, qualified via demo call",
+            "animate": "typewriter",
+            "speed": 20
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports all 4 actions succeeded with updated field state",
+      "message": {
+        "type": "result",
+        "seq": 1,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          },
+          {
+            "index": 1,
+            "success": true
+          },
+          {
+            "index": 2,
+            "success": true
+          },
+          {
+            "index": 3,
+            "success": true
+          }
+        ],
+        "state": {
+          "screen": "deals",
+          "fields": {
+            "contact": {
+              "value": "Globex Corporation",
+              "valid": true,
+              "dirty": true
+            },
+            "stage": {
+              "value": "qualified",
+              "valid": true,
+              "dirty": true
+            },
+            "amount": {
+              "value": 2500.00,
+              "valid": true,
+              "dirty": true
+            },
+            "notes": {
+              "value": "Enterprise software license, qualified via demo call",
+              "valid": true,
+              "dirty": true
+            }
+          },
+          "canSubmit": true
+        }
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends a clear action on the notes field",
+      "message": {
+        "type": "command",
+        "seq": 2,
+        "actions": [
+          {
+            "do": "clear",
+            "field": "notes"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports clear succeeded; notes is now empty and invalid, canSubmit is false",
+      "message": {
+        "type": "result",
+        "seq": 2,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ],
+        "state": {
+          "screen": "deals",
+          "fields": {
+            "contact": {
+              "value": "Globex Corporation",
+              "valid": true,
+              "dirty": true
+            },
+            "stage": {
+              "value": "qualified",
+              "valid": true,
+              "dirty": true
+            },
+            "amount": {
+              "value": 2500.00,
+              "valid": true,
+              "dirty": true
+            },
+            "notes": {
+              "value": "",
+              "valid": false,
+              "dirty": true
+            }
+          },
+          "canSubmit": false
+        }
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server returns to idle status after command execution completes",
+      "message": {
+        "type": "status",
+        "status": "idle"
+      }
+    }
+  ]
+}

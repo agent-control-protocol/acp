@@ -1,0 +1,35 @@
+{
+  "name": "@acp-protocol/conformance",
+  "version": "1.0.0",
+  "description": "Conformance test suite for ACP (Agent Control Protocol) implementations",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "test:schema": "node --test tests/schema-validation.test.js",
+    "test:handshake": "node --test tests/handshake.test.js",
+    "test:actions": "node --test tests/actions.test.js",
+    "test:session": "node --test tests/full-session.test.js"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "ws": "^8.18.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/primoia/acp-protocol.git",
+    "directory": "conformance"
+  },
+  "keywords": [
+    "acp",
+    "agent-control-protocol",
+    "conformance",
+    "testing",
+    "websocket",
+    "protocol"
+  ]
+}

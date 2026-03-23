@@ -1,0 +1,198 @@
+{
+  "id": "modal-actions",
+  "name": "Modal and Confirm Actions",
+  "description": "Tests open_modal, close_modal, and ask_confirm actions",
+  "steps": [
+    {
+      "direction": "server_to_client",
+      "description": "Server sends config with session ID, features, and LLM providers",
+      "message": {
+        "type": "config",
+        "sessionId": "session-modal-001",
+        "features": {
+          "chat": true
+        },
+        "providers": [
+          {
+            "id": "anthropic",
+            "name": "Anthropic Claude",
+            "model": "claude-sonnet-4-5-20250929"
+          }
+        ],
+        "current_provider": "anthropic"
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client sends manifest with deals screen including a contact_picker modal",
+      "message": {
+        "type": "manifest",
+        "app": "crm-demo",
+        "version": "1.0.0",
+        "currentScreen": "deals",
+        "screens": {
+          "deals": {
+            "id": "deals",
+            "label": "New Deal",
+            "route": "/deals",
+            "fields": [
+              {
+                "id": "contact",
+                "type": "autocomplete",
+                "label": "Contact",
+                "required": true
+              },
+              {
+                "id": "amount",
+                "type": "currency",
+                "label": "Deal Amount",
+                "required": true
+              }
+            ],
+            "actions": [
+              {
+                "id": "create_deal",
+                "label": "Create Deal",
+                "requiresConfirmation": true
+              }
+            ],
+            "modals": [
+              {
+                "id": "contact_picker",
+                "label": "Select Contact",
+                "searchable": true
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server opens the contact_picker modal with a search query",
+      "message": {
+        "type": "command",
+        "seq": 1,
+        "actions": [
+          {
+            "do": "open_modal",
+            "modal": "contact_picker",
+            "query": "Globex"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports modal opened successfully",
+      "message": {
+        "type": "result",
+        "seq": 1,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server closes the modal",
+      "message": {
+        "type": "command",
+        "seq": 2,
+        "actions": [
+          {
+            "do": "close_modal"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports modal closed successfully",
+      "message": {
+        "type": "result",
+        "seq": 2,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server asks for confirmation before creating the deal",
+      "message": {
+        "type": "command",
+        "seq": 3,
+        "actions": [
+          {
+            "do": "ask_confirm",
+            "message": "Create a deal for Globex Corp with an amount of $2,500.00?"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client confirms the deal creation",
+      "message": {
+        "type": "confirm",
+        "seq": 3,
+        "confirmed": true
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server sends success chat message from the agent",
+      "message": {
+        "type": "chat",
+        "from": "agent",
+        "message": "Deal created successfully!",
+        "final": true
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server shows a success toast with the deal ID",
+      "message": {
+        "type": "command",
+        "seq": 4,
+        "actions": [
+          {
+            "do": "show_toast",
+            "message": "Deal #12345 created",
+            "level": "success",
+            "duration": 5000
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports toast shown successfully",
+      "message": {
+        "type": "result",
+        "seq": 4,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server returns to idle status",
+      "message": {
+        "type": "status",
+        "status": "idle"
+      }
+    }
+  ]
+}

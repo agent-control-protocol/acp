@@ -1,0 +1,189 @@
+{
+  "id": "ui-actions",
+  "name": "Highlight, Enable, Disable, and Toast Actions",
+  "description": "Tests highlight, enable, disable, and show_toast actions",
+  "steps": [
+    {
+      "direction": "server_to_client",
+      "description": "Server sends config with session ID, features, and LLM providers",
+      "message": {
+        "type": "config",
+        "sessionId": "session-ui-001",
+        "features": {
+          "chat": true
+        },
+        "providers": [
+          {
+            "id": "openai",
+            "name": "OpenAI GPT-4o",
+            "model": "gpt-4o"
+          }
+        ],
+        "current_provider": "openai"
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client sends manifest with a single deals screen",
+      "message": {
+        "type": "manifest",
+        "app": "crm-demo",
+        "version": "1.0.0",
+        "currentScreen": "deals",
+        "screens": {
+          "deals": {
+            "id": "deals",
+            "label": "New Deal",
+            "route": "/deals",
+            "fields": [
+              {
+                "id": "contact",
+                "type": "autocomplete",
+                "label": "Contact",
+                "required": true
+              },
+              {
+                "id": "stage",
+                "type": "select",
+                "label": "Pipeline Stage",
+                "required": true
+              },
+              {
+                "id": "amount",
+                "type": "currency",
+                "label": "Deal Amount",
+                "required": true
+              },
+              {
+                "id": "notes",
+                "type": "textarea",
+                "label": "Notes",
+                "required": true
+              }
+            ],
+            "actions": [
+              {
+                "id": "create_deal",
+                "label": "Create Deal",
+                "requiresConfirmation": true
+              },
+              {
+                "id": "cancel_deal",
+                "label": "Cancel"
+              }
+            ],
+            "modals": []
+          }
+        }
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server disables amount and stage fields, highlights contact, and shows a warning toast",
+      "message": {
+        "type": "command",
+        "seq": 1,
+        "actions": [
+          {
+            "do": "disable",
+            "field": "amount"
+          },
+          {
+            "do": "disable",
+            "field": "stage"
+          },
+          {
+            "do": "highlight",
+            "field": "contact",
+            "duration": 3000
+          },
+          {
+            "do": "show_toast",
+            "message": "Please select a contact first",
+            "level": "warning",
+            "duration": 4000
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports all four actions executed successfully",
+      "message": {
+        "type": "result",
+        "seq": 1,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          },
+          {
+            "index": 1,
+            "success": true
+          },
+          {
+            "index": 2,
+            "success": true
+          },
+          {
+            "index": 3,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server re-enables amount and stage fields and shows a success toast",
+      "message": {
+        "type": "command",
+        "seq": 2,
+        "actions": [
+          {
+            "do": "enable",
+            "field": "amount"
+          },
+          {
+            "do": "enable",
+            "field": "stage"
+          },
+          {
+            "do": "show_toast",
+            "message": "Fields enabled successfully",
+            "level": "success"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "client_to_server",
+      "description": "Client reports all three actions executed successfully",
+      "message": {
+        "type": "result",
+        "seq": 2,
+        "results": [
+          {
+            "index": 0,
+            "success": true
+          },
+          {
+            "index": 1,
+            "success": true
+          },
+          {
+            "index": 2,
+            "success": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "server_to_client",
+      "description": "Server returns to idle status",
+      "message": {
+        "type": "status",
+        "status": "idle"
+      }
+    }
+  ]
+}
