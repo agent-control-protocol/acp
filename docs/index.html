@@ -323,6 +323,37 @@
     font-size: 0.85rem;
   }
 
+  /* ---------- Video Embed ---------- */
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 32px;
+    padding-bottom: 56.25%; /* 16:9 */
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .video-caption {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   /* ---------- Responsive ---------- */
   @media (max-width: 700px) {
     .hero { padding: 64px 0 56px; }
@@ -419,6 +450,11 @@
 <section>
   <div class="container">
     <h2>See It In Action</h2>
+
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/BMrzKKYxfAY" title="ACP Protocol Demo — Three agents, one task" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+    <p class="video-caption">Three agents (Gemini, DeepSeek, Haiku) completing a full task in parallel using ACP.</p>
 
     <div class="code-label">1. Application sends manifest</div>
 <pre><span class="jp">{</span>
@@ -562,6 +598,7 @@
       <a href="https://github.com/agent-control-protocol/acp/blob/main/spec/SPEC.md">Specification</a>
       <a href="https://github.com/agent-control-protocol/acp">GitHub</a>
       <a href="https://github.com/agent-control-protocol/acp/blob/main/CONTRIBUTING.md">Contributing</a>
+      <a href="https://www.youtube.com/@primoia-dev">YouTube</a>
     </div>
     <p>ACP is an open protocol under the Apache 2.0 license.</p>
     <p>Created by <a href="https://primoia.ai">Primoia</a></p>
