@@ -24,7 +24,14 @@ We're open-sourcing ACP (Agent Control Protocol), a protocol specification that 
 - 15 field types (text, number, currency, date, email, select, autocomplete, file, etc.)
 - 5 annotated example message exchanges
 - Conformance test suite for validating implementations
+- Reference server in TypeScript (`npm install @acprotocol/server` -- works with OpenAI, DeepSeek, Groq, or any compatible API)
 - Apache 2.0 license
+
+**Try it in 10 seconds:**
+
+```
+OPENAI_API_KEY=sk-... npx @acprotocol/server
+```
 
 **Why we built this:** We built ACP for our own product (Emitta, an invoicing/ERP platform in Brazil) where an AI agent helps users navigate forms and complete workflows. We've been running it in production. After watching the agent-protocol ecosystem grow -- MCP, A2A, AG-UI, A2UI -- with nobody addressing "operate existing UI," we decided to extract the protocol and open the spec.
 
@@ -38,6 +45,8 @@ We're open-sourcing ACP (Agent Control Protocol), a protocol specification that 
 **Links:**
 
 - Spec + repo: https://github.com/agent-control-protocol/acp
+- Reference server: https://github.com/agent-control-protocol/acp-server
+- npm: https://www.npmjs.com/package/@acprotocol/server
 - Website: https://acp-protocol.org
 - Live demo (AI-assisted forms): https://primoia.ai
 
