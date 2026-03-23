@@ -166,12 +166,20 @@ The first production implementation is [Vocall Engine](https://primoia.ai) by Pr
 | [Vocall Engine](https://primoia.ai) by Primoia | Server | Go | Production |
 | [vocall_sdk](https://pub.dev/packages/vocall_sdk) by Primoia | SDK | Flutter | Production |
 | [vocall-react](https://primoia.ai) by Primoia | SDK | React / Next.js | Production |
+| [`@acp-protocol/server`](https://github.com/agent-control-protocol/acp-server) | Server (Reference) | TypeScript | Beta |
 
 Building an ACP implementation? Open a PR to add it to this table.
 
 ## Extensions
 
 The core protocol handles text interaction and UI control. Implementations MAY extend the protocol to support additional modalities such as voice interaction, haptic feedback, or accessibility features. Extensions should be namespaced to avoid conflicts with future protocol versions.
+
+## Community
+
+- [GitHub Discussions](https://github.com/agent-control-protocol/acp/discussions) — Questions, ideas, and general discussion
+- [Issue Tracker](https://github.com/agent-control-protocol/acp/issues) — Bug reports and feature requests
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
 
 ## Contributing
 

@@ -1,0 +1,37 @@
+name: Feature Request
+description: Propose a new action, field type, or protocol change
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A concise description of the proposed change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Why is this needed? What problem does it solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-spec-changes
+    attributes:
+      label: Proposed Spec Changes
+      description: Describe the spec or schema changes you envision.
+
+  - type: dropdown
+    id: backward-compatibility
+    attributes:
+      label: Backward Compatibility
+      description: Is this change backward compatible with existing implementations?
+      options:
+        - "Yes"
+        - "No"
+        - "Unsure"
+    validations:
+      required: true

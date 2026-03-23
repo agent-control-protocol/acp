@@ -1,0 +1,38 @@
+name: Bug Report
+description: Report an issue with the ACP specification or conformance tests
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear description of the bug.
+      placeholder: What went wrong?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+
+  - type: input
+    id: spec-section
+    attributes:
+      label: Spec Section
+      description: Which part of the spec is affected (e.g., "3.2 Action Messages")?
+      placeholder: e.g., 3.2 Action Messages
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: ACP Version
+      options:
+        - v1
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context, logs, or screenshots.
