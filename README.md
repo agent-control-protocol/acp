@@ -24,6 +24,21 @@ AG-UI streams events, but the frontend must implement handlers for every action 
 
 ACP fills this gap. The application declares its UI structure through a manifest, and the agent sends structured commands -- `fill`, `click`, `navigate`, `select` -- that the SDK executes against the live interface.
 
+## Try It
+
+**Live demo (no setup):** [primoia.ai/sandbox](https://primoia.ai/sandbox)
+
+**Run locally:**
+
+```bash
+git clone https://github.com/agent-control-protocol/acp-demo.git
+cd acp-demo && npm install
+cp .env.example .env   # add your OpenAI API key
+npm start              # open http://localhost:3098
+```
+
+Type *"Register my dog Max, owner Sarah Connor, sarah@skynet.com"* and watch the agent fill the form.
+
 ## How It Works
 
 **1. Describe** -- The application sends a manifest describing its screens, fields, actions, and modals. This is the agent's map of the interface.
@@ -166,7 +181,8 @@ The first production implementation is [Vocall Engine](https://primoia.ai) by Pr
 | [Vocall Engine](https://primoia.ai) by Primoia | Server | Go | Production |
 | [vocall_sdk](https://pub.dev/packages/vocall_sdk) by Primoia | SDK | Flutter | Production |
 | [vocall-react](https://primoia.ai) by Primoia | SDK | React / Next.js | Production |
-| [`@acp-protocol/server`](https://github.com/agent-control-protocol/acp-server) | Server (Reference) | TypeScript | Beta |
+| [`@acprotocol/server`](https://github.com/agent-control-protocol/acp-server) | Server (Reference) | TypeScript | Beta |
+| [acp-demo](https://github.com/agent-control-protocol/acp-demo) | Interactive Demo | TypeScript | Beta |
 
 Building an ACP implementation? Open a PR to add it to this table.
 

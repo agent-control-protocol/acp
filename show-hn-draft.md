@@ -44,11 +44,12 @@ OPENAI_API_KEY=sk-... npx @acprotocol/server
 
 **Links:**
 
+- Live demo (try it now): https://primoia.ai/sandbox
 - Spec + repo: https://github.com/agent-control-protocol/acp
+- Run it locally: https://github.com/agent-control-protocol/acp-demo
 - Reference server: https://github.com/agent-control-protocol/acp-server
 - npm: https://www.npmjs.com/package/@acprotocol/server
 - Website: https://acp-protocol.org
-- Live demo (AI-assisted forms): https://primoia.ai
 
 **What we'd love feedback on:**
 
