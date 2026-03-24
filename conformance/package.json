@@ -12,7 +12,12 @@
     "test:schema": "node --test tests/schema-validation.test.js",
     "test:handshake": "node --test tests/handshake.test.js",
     "test:actions": "node --test tests/actions.test.js",
-    "test:session": "node --test tests/full-session.test.js"
+    "test:session": "node --test tests/full-session.test.js",
+    "check": "node bin/check-conformance.js",
+    "schema:diff": "node scripts/schema-diff.js"
+  },
+  "bin": {
+    "acp-conformance": "bin/check-conformance.js"
   },
   "dependencies": {
     "ajv": "^8.17.1",

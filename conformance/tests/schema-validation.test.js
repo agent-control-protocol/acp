@@ -16,6 +16,8 @@ import {
   validateClientMessage,
   validateServerMessage,
   getMessageTypes,
+  getUIActions,
+  getFieldTypes,
 } from '../lib/schema-validator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -102,14 +104,8 @@ describe('Fixture schema validation', () => {
 });
 
 describe('Action coverage', () => {
-  const ALL_ACTIONS = [
-    'navigate', 'fill', 'clear', 'select', 'click',
-    'highlight', 'focus', 'scroll_to', 'show_toast',
-    'ask_confirm', 'open_modal', 'close_modal',
-    'enable', 'disable',
-  ];
-
-  it('should cover all 14 UI actions across fixtures', () => {
+  it('should cover all UI actions defined in the schema across fixtures', () => {
+    const ALL_ACTIONS = getUIActions();
     const coveredActions = new Set();
 
     for (const { data } of fixtures) {
@@ -131,7 +127,11 @@ describe('Action coverage', () => {
 });
 
 describe('Message type coverage', () => {
-  it('should cover all required client message types across fixtures', () => {
+  // Types that are hard to fixture (config-only or error-only scenarios)
+  const OPTIONAL_CLIENT_TYPES = new Set(['llm_config', 'response_lang_config', 'state']);
+  const OPTIONAL_SERVER_TYPES = new Set(['error']);
+
+  it('should cover all required client message types from the schema', () => {
     const covered = new Set();
 
     for (const { data } of fixtures) {
@@ -142,13 +142,13 @@ describe('Message type coverage', () => {
       }
     }
 
-    // Core types that must be covered (config types are optional in fixtures)
-    const required = ['manifest', 'text', 'result', 'confirm'];
+    const allClientTypes = getMessageTypes().client;
+    const required = allClientTypes.filter((t) => !OPTIONAL_CLIENT_TYPES.has(t));
     const missing = required.filter((t) => !covered.has(t));
     assert.equal(missing.length, 0, `Missing client message types: ${missing.join(', ')}`);
   });
 
-  it('should cover all required server message types across fixtures', () => {
+  it('should cover all required server message types from the schema', () => {
     const covered = new Set();
 
     for (const { data } of fixtures) {
@@ -159,8 +159,34 @@ describe('Message type coverage', () => {
       }
     }
 
-    const required = ['config', 'command', 'chat', 'chat_token', 'status'];
+    const allServerTypes = getMessageTypes().server;
+    const required = allServerTypes.filter((t) => !OPTIONAL_SERVER_TYPES.has(t));
     const missing = required.filter((t) => !covered.has(t));
     assert.equal(missing.length, 0, `Missing server message types: ${missing.join(', ')}`);
+  });
+});
+
+describe('Field type coverage', () => {
+  it('should cover all field types defined in the schema across fixture manifests', () => {
+    const ALL_FIELD_TYPES = getFieldTypes();
+    const coveredTypes = new Set();
+
+    for (const { data } of fixtures) {
+      for (const step of data.steps) {
+        if (step.message?.type !== 'manifest') continue;
+        const screens = step.message.screens || {};
+        for (const screen of Object.values(screens)) {
+          for (const field of (screen.fields || [])) {
+            coveredTypes.add(field.type);
+          }
+        }
+      }
+    }
+
+    const missing = ALL_FIELD_TYPES.filter((t) => !coveredTypes.has(t));
+    assert.equal(
+      missing.length, 0,
+      `Missing field type coverage in fixtures: ${missing.join(', ')}`
+    );
   });
 });

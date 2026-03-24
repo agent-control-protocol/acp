@@ -162,6 +162,59 @@
                     "label": "US Pacific"
                   }
                 ]
+              },
+              {
+                "id": "employee_count",
+                "type": "number",
+                "label": "Employee Count",
+                "min": 1,
+                "max": 100000
+              },
+              {
+                "id": "founded",
+                "type": "date",
+                "label": "Founded Date"
+              },
+              {
+                "id": "last_audit",
+                "type": "datetime",
+                "label": "Last Audit"
+              },
+              {
+                "id": "support_phone",
+                "type": "phone",
+                "label": "Support Phone"
+              },
+              {
+                "id": "tax_id",
+                "type": "masked",
+                "label": "Tax ID",
+                "mask": "##-#######"
+              },
+              {
+                "id": "newsletter",
+                "type": "checkbox",
+                "label": "Subscribe to Newsletter"
+              },
+              {
+                "id": "plan",
+                "type": "radio",
+                "label": "Plan",
+                "options": [
+                  { "value": "free", "label": "Free" },
+                  { "value": "pro", "label": "Pro" },
+                  { "value": "enterprise", "label": "Enterprise" }
+                ]
+              },
+              {
+                "id": "logo",
+                "type": "file",
+                "label": "Company Logo"
+              },
+              {
+                "id": "tenant_id",
+                "type": "hidden",
+                "label": "Tenant ID"
               }
             ],
             "actions": [],

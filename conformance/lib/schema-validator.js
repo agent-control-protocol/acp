@@ -14,20 +14,30 @@ import addFormats from 'ajv-formats';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCHEMA_PATH = path.resolve(__dirname, '../../spec/acp-v1.json');
 
-const CLIENT_MESSAGE_TYPES = [
-  'manifest', 'text', 'state', 'result', 'confirm',
-  'llm_config', 'response_lang_config',
-];
-
-const SERVER_MESSAGE_TYPES = [
-  'config', 'command', 'chat', 'chat_token', 'status', 'error',
-];
-
 let ajvInstance = null;
 let compiledSchema = null;
 let clientValidator = null;
 let serverValidator = null;
 let messageValidator = null;
+let clientMessageTypes = null;
+let serverMessageTypes = null;
+let uiActions = null;
+let fieldTypes = null;
+
+/**
+ * Extracts message type constants from a schema union definition.
+ * Reads the "const" value of the "type" property from each referenced $def.
+ */
+function extractMessageTypes(defs, unionName) {
+  const union = defs[unionName];
+  if (!union?.oneOf) return [];
+  return union.oneOf
+    .map((ref) => {
+      const defName = ref.$ref?.replace('#/$defs/', '');
+      return defName && defs[defName]?.properties?.type?.const;
+    })
+    .filter(Boolean);
+}
 
 /**
  * Loads the ACP v1 JSON Schema and compiles Ajv validators.
@@ -45,6 +55,12 @@ export async function loadSchema() {
 
   // Compile validators with $defs available for $ref resolution
   const defs = compiledSchema.$defs || {};
+
+  // Derive message types, actions, and field types from schema
+  clientMessageTypes = extractMessageTypes(defs, 'ClientMessage');
+  serverMessageTypes = extractMessageTypes(defs, 'ServerMessage');
+  uiActions = defs.UIAction?.properties?.do?.enum || [];
+  fieldTypes = defs.FieldDescriptor?.properties?.type?.enum || [];
 
   if (defs.ClientMessage) {
     clientValidator = ajvInstance.compile({ $defs: defs, ...defs.ClientMessage });
@@ -116,9 +132,42 @@ export function validateServerMessage(message) {
 }
 
 /**
- * Returns the known ACP v1 message types grouped by direction.
+ * Returns ACP v1 message types derived from the schema.
  * @returns {{client: string[], server: string[]}}
  */
 export function getMessageTypes() {
-  return { client: [...CLIENT_MESSAGE_TYPES], server: [...SERVER_MESSAGE_TYPES] };
+  if (!clientMessageTypes || !serverMessageTypes) {
+    throw new Error('Schema not loaded. Call loadSchema() before getMessageTypes().');
+  }
+  return { client: [...clientMessageTypes], server: [...serverMessageTypes] };
+}
+
+/**
+ * Returns all UI action types derived from the schema UIAction.do enum.
+ * @returns {string[]}
+ */
+export function getUIActions() {
+  if (!uiActions) {
+    throw new Error('Schema not loaded. Call loadSchema() before getUIActions().');
+  }
+  return [...uiActions];
+}
+
+/**
+ * Returns all field types derived from the schema FieldDescriptor.type enum.
+ * @returns {string[]}
+ */
+export function getFieldTypes() {
+  if (!fieldTypes) {
+    throw new Error('Schema not loaded. Call loadSchema() before getFieldTypes().');
+  }
+  return [...fieldTypes];
+}
+
+/**
+ * Returns the raw compiled schema object.
+ * @returns {object|null}
+ */
+export function getSchema() {
+  return compiledSchema;
 }
