@@ -242,6 +242,74 @@ Client (SDK)                            Server (Engine)
    handle server-initiated closures gracefully and attempt reconnection as
    described in Section 7.5.
 
+### 8.1 Protocol State Machine
+
+The following state machine defines the valid states and transitions for an ACP
+connection. Implementations MUST enforce these transitions; messages received in
+an invalid state SHOULD result in an `error` message with code `invalid_message`.
+
+```
+                       WebSocket open
+                            │
+                            ▼
+                    ┌───────────────┐
+                    │  CONNECTED    │
+                    │ (await config)│
+                    └──────┬────────┘
+                    config │
+                            ▼
+                    ┌───────────────┐
+                    │  CONFIGURING  │
+                    │(await manifest│
+                    └──────┬────────┘
+                  manifest │
+                            ▼
+              ┌─────────────────────────┐
+              │                         │
+              │         IDLE            │◄──────────────────┐
+              │  (ready for user input) │                   │
+              │                         │                   │
+              └────────┬────────────────┘                   │
+                       │ text message                       │
+                       ▼                                    │
+              ┌─────────────────┐                           │
+              │                 │  chat / chat_token         │
+              │    THINKING     │──────────────────►(stream) │
+              │ (LLM processing)│                           │
+              │                 │                           │
+              └────────┬────────┘                           │
+                       │ command                            │
+                       ▼                                    │
+              ┌─────────────────┐                           │
+              │                 │  result                   │
+              │   EXECUTING     │───────► THINKING ─────────┘
+              │(await SDK result│         (may loop)
+              │                 │
+              └─────────────────┘
+
+  Any state ──── WebSocket close / error ────► DISCONNECTED
+```
+
+**State descriptions:**
+
+| State | Entry condition | Valid client messages | Valid server messages |
+|-------|----------------|----------------------|----------------------|
+| CONNECTED | WebSocket opened | *(none — await config)* | `config` |
+| CONFIGURING | `config` received | `manifest` | `error` |
+| IDLE | Manifest processed or agent loop complete | `text`, `state`, `llm_config`, `response_lang_config` | `chat`, `chat_token`, `status`, `error` |
+| THINKING | User text sent or result received | *(none — await agent)* | `chat_token`, `chat`, `command`, `status`, `error` |
+| EXECUTING | `command` sent to SDK | `result`, `confirm` | `error` |
+| DISCONNECTED | WebSocket closed | *(none)* | *(none)* |
+
+**Transition rules:**
+
+1. The engine MUST NOT send `command` messages while in IDLE state.
+2. The SDK MUST NOT send `text` messages while in THINKING or EXECUTING state.
+   If received, the engine SHOULD respond with an `error` (code: `invalid_message`).
+3. The THINKING → EXECUTING → THINKING loop MAY repeat up to the engine's
+   configured maximum rounds (RECOMMENDED: 5).
+4. After the final agent loop round, the engine MUST transition to IDLE.
+
 ---
 
 ## 9. Message Reference
@@ -1306,6 +1374,69 @@ The following error codes are RECOMMENDED for use by engine implementations:
   reconnection with fresh credentials.
 - On receiving `rate_limited`, SDKs SHOULD implement backoff before sending
   additional messages.
+
+### 15.4 Error Recovery Patterns
+
+This section describes RECOMMENDED recovery patterns for common error scenarios.
+
+#### 15.4.1 Field Not Found
+
+When the agent references a field that does not exist in the current screen:
+
+```json
+// Engine sends command
+{ "type": "command", "seq": 3, "actions": [{ "do": "fill", "field": "nonexistent_field", "value": "test" }] }
+
+// SDK returns error result
+{ "type": "result", "seq": 3, "results": [{ "index": 0, "success": false, "error": "Field 'nonexistent_field' not found on screen 'main'" }] }
+```
+
+The engine SHOULD relay this error to the LLM, which can use the manifest
+information to identify the correct field and retry.
+
+#### 15.4.2 Invalid Field Value
+
+When the agent provides a value incompatible with the field type:
+
+```json
+// Engine sends command (text value for number field)
+{ "type": "command", "seq": 4, "actions": [{ "do": "fill", "field": "age", "value": "not-a-number" }] }
+
+// SDK returns error result
+{ "type": "result", "seq": 4, "results": [{ "index": 0, "success": false, "error": "Field 'age' expects a numeric value" }] }
+```
+
+SDKs SHOULD validate values against field types before applying them.
+
+#### 15.4.3 Network Interruption During Execution
+
+If the WebSocket connection drops while the SDK is executing commands:
+
+1. The SDK SHOULD attempt reconnection as described in Section 7.5.
+2. On reconnection, the SDK MUST send a fresh `manifest` message reflecting
+   the current UI state (including any partially-applied changes).
+3. The engine MUST treat the reconnection as a new session context.
+4. Any in-flight `result` messages for the previous connection are discarded.
+
+#### 15.4.4 Command Timeout
+
+If the SDK does not send a `result` within the expected timeout period
+(RECOMMENDED: 30 seconds):
+
+1. The engine SHOULD send an `error` message with a descriptive message.
+2. The engine SHOULD transition to IDLE state.
+3. The SDK MAY discard any pending command execution.
+
+#### 15.4.5 LLM Provider Failure
+
+If the LLM provider returns an error or becomes unreachable:
+
+```json
+{ "type": "error", "code": "provider_error", "message": "LLM provider returned HTTP 503" }
+```
+
+The engine SHOULD transition to IDLE state after sending the error, allowing
+the user to retry their request.
 
 ---
 

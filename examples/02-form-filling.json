@@ -6,7 +6,7 @@
       "description": "Server sends session config",
       "message": {
         "type": "config",
-        "sessionId": "aap-example-form-001",
+        "sessionId": "acp-example-form-001",
         "features": {
           "chat": true
         },

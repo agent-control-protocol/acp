@@ -6,7 +6,7 @@
       "description": "Server sends session config",
       "message": {
         "type": "config",
-        "sessionId": "aap-example-nav-001",
+        "sessionId": "acp-example-nav-001",
         "features": {
           "chat": true
         },

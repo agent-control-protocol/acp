@@ -8,9 +8,9 @@ The conformance suite covers three areas:
 
 - **Schema compliance.** Every message your implementation sends or receives must conform to the ACP JSON Schema definitions. The suite validates message structure, required fields, type constraints, and format rules (such as ISO 8601 timestamps and UUID session identifiers).
 
-- **Message exchange sequences.** ACP defines specific handshake and lifecycle sequences (e.g., `hello` / `hello-ack`, session establishment, graceful disconnect). The suite replays these sequences against your implementation and verifies that responses arrive in the correct order with the expected content.
+- **Message exchange sequences.** ACP defines specific handshake and lifecycle sequences (e.g., `config` / `manifest`, session establishment, graceful disconnect). The suite replays these sequences against your implementation and verifies that responses arrive in the correct order with the expected content.
 
-- **Action coverage.** Each action type defined in the spec (e.g., `speak`, `listen`, `transfer`, `hangup`) has dedicated test cases that exercise both the happy path and common error conditions. The suite verifies that your implementation handles action requests, emits proper action results, and rejects malformed payloads with appropriate error codes.
+- **Action coverage.** Each action type defined in the spec (e.g., `fill`, `clear`, `select`, `click`, `navigate`, `highlight`, `focus`, `scroll_to`, `enable`, `disable`, `show_toast`, `ask_confirm`, `open_modal`, `close_modal`) has dedicated test cases that exercise both the happy path and common error conditions. The suite verifies that your implementation handles action requests, emits proper action results, and rejects malformed payloads with appropriate error codes.
 
 ## Prerequisites
 
@@ -85,7 +85,7 @@ Each fixture is a JSON file containing either:
 - A **single message object** (for schema tests), with a top-level `"type"` field indicating the message type.
 - An **ordered array of message objects** (for sequence tests), representing the expected exchange from first message to last.
 
-Fixture files are named descriptively, e.g., `hello-valid.json`, `speak-action-missing-text.json`, `session-resume-expired.json`.
+Fixture files are named descriptively, e.g., `01-handshake.json`, `02-fill-actions.json`, `03-nav-actions.json`, `04-ui-actions.json`, `05-modal-actions.json`, `06-full-session.json`.
 
 ## What "ACP-Compliant" Means
 

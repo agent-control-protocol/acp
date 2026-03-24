@@ -6,7 +6,7 @@
       "description": "Server sends session config with features, providers, and current provider",
       "message": {
         "type": "config",
-        "sessionId": "aap-example-handshake-001",
+        "sessionId": "acp-example-handshake-001",
         "features": {
           "chat": true
         },

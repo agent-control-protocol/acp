@@ -6,7 +6,7 @@
       "description": "Server sends session config with multiple LLM providers",
       "message": {
         "type": "config",
-        "sessionId": "aap-example-crm-001",
+        "sessionId": "acp-example-crm-001",
         "features": {
           "chat": true
         },
