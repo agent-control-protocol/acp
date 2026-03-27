@@ -31,7 +31,6 @@
         { "$ref": "#/$defs/ConfigResponse" },
         { "$ref": "#/$defs/CommandMessage" },
         { "$ref": "#/$defs/ChatMessage" },
-        { "$ref": "#/$defs/ChatTokenMessage" },
         { "$ref": "#/$defs/StatusMessage" },
         { "$ref": "#/$defs/ErrorMessage" }
       ]
@@ -181,18 +180,15 @@
         "type": { "const": "chat" },
         "from": { "type": "string", "enum": ["agent", "user", "system"] },
         "message": { "type": "string" },
+        "delta": { "type": "boolean" },
         "final": { "type": "boolean" }
       },
-      "additionalProperties": false
-    },
-
-    "ChatTokenMessage": {
-      "type": "object",
-      "description": "Engine → SDK: Streaming chat token.",
-      "required": ["type", "token"],
-      "properties": {
-        "type": { "const": "chat_token" },
-        "token": { "type": "string" }
+      "not": {
+        "required": ["delta", "final"],
+        "properties": {
+          "delta": { "const": true },
+          "final": { "const": true }
+        }
       },
       "additionalProperties": false
     },
@@ -231,10 +227,8 @@
         "do": {
           "type": "string",
           "enum": [
-            "navigate", "fill", "clear", "select", "click",
-            "highlight", "focus", "scroll_to", "show_toast",
-            "ask_confirm", "open_modal", "close_modal",
-            "enable", "disable"
+            "navigate", "set_field", "clear", "click",
+            "show_toast", "ask_confirm", "open_modal", "close_modal"
           ]
         },
         "screen": { "type": "string" },
@@ -244,20 +238,14 @@
         "value": {},
         "query": { "type": "string" },
         "message": { "type": "string" },
-        "animate": { "type": "string", "enum": ["typewriter", "count_up", "fade_in", "none"] },
-        "speed": { "type": "integer", "minimum": 1 },
         "duration": { "type": "integer", "minimum": 0 },
         "level": { "type": "string", "enum": ["info", "success", "warning", "error"] }
       },
       "allOf": [
         { "if": { "properties": { "do": { "const": "navigate" } } }, "then": { "required": ["screen"] } },
-        { "if": { "properties": { "do": { "const": "fill" } } }, "then": { "required": ["field", "value"] } },
+        { "if": { "properties": { "do": { "const": "set_field" } } }, "then": { "required": ["field", "value"] } },
         { "if": { "properties": { "do": { "const": "clear" } } }, "then": { "required": ["field"] } },
-        { "if": { "properties": { "do": { "const": "select" } } }, "then": { "required": ["field", "value"] } },
         { "if": { "properties": { "do": { "const": "click" } } }, "then": { "required": ["action"] } },
-        { "if": { "properties": { "do": { "const": "highlight" } } }, "then": { "required": ["field"] } },
-        { "if": { "properties": { "do": { "const": "focus" } } }, "then": { "required": ["field"] } },
-        { "if": { "properties": { "do": { "const": "scroll_to" } } }, "then": { "required": ["field"] } },
         { "if": { "properties": { "do": { "const": "show_toast" } } }, "then": { "required": ["message"] } },
         { "if": { "properties": { "do": { "const": "ask_confirm" } } }, "then": { "required": ["message"] } },
         { "if": { "properties": { "do": { "const": "open_modal" } } }, "then": { "required": ["modal"] } }

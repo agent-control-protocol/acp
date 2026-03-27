@@ -1,5 +1,5 @@
 {
-  "_comment": "Full CRM session: A complete multi-step interaction in a CRM application. The agent creates a contact record (navigates, fills fields, saves) and then creates a deal on a separate screen. Demonstrates the full power of ACP: streaming chat tokens, navigation between screens, form filling with animations, click actions, state snapshots, and multi-command sequences.",
+  "_comment": "Full CRM session: A complete multi-step interaction in a CRM application. The agent creates a contact record (navigates, sets fields, saves) and then creates a deal on a separate screen. Demonstrates the full power of ACP: streaming chat deltas, navigation between screens, set_field actions, click actions, state snapshots, and multi-command sequences.",
   "steps": [
     {
       "direction": "server",
@@ -249,58 +249,72 @@
     },
     {
       "direction": "server",
-      "description": "Server streams first token",
+      "description": "Server streams first chat delta",
       "message": {
-        "type": "chat_token",
-        "token": "I'll"
+        "type": "chat",
+        "from": "agent",
+        "message": "I'll",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams second token",
+      "description": "Server streams second chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " create"
+        "type": "chat",
+        "from": "agent",
+        "message": " create",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams third token",
+      "description": "Server streams third chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " the contact"
+        "type": "chat",
+        "from": "agent",
+        "message": " the contact",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams fourth token",
+      "description": "Server streams fourth chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " for Sarah Chen"
+        "type": "chat",
+        "from": "agent",
+        "message": " for Sarah Chen",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams fifth token",
+      "description": "Server streams fifth chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " and then"
+        "type": "chat",
+        "from": "agent",
+        "message": " and then",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams sixth token",
+      "description": "Server streams sixth chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " set up"
+        "type": "chat",
+        "from": "agent",
+        "message": " set up",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams seventh token",
+      "description": "Server streams seventh chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " the deal."
+        "type": "chat",
+        "from": "agent",
+        "message": " the deal.",
+        "delta": true
       }
     },
     {
@@ -348,41 +362,33 @@
     },
     {
       "direction": "server",
-      "description": "Step 2: Fill all contact fields with animations",
+      "description": "Step 2: Set all contact fields",
       "message": {
         "type": "command",
         "seq": 2,
         "actions": [
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "firstName",
-            "value": "Sarah",
-            "animate": "typewriter",
-            "speed": 30
+            "value": "Sarah"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "lastName",
-            "value": "Chen",
-            "animate": "typewriter",
-            "speed": 30
+            "value": "Chen"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "email",
-            "value": "sarah.chen@acme.com",
-            "animate": "typewriter",
-            "speed": 20
+            "value": "sarah.chen@acme.com"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "company",
-            "value": "Acme Corp",
-            "animate": "typewriter",
-            "speed": 25
+            "value": "Acme Corp"
           },
           {
-            "do": "select",
+            "do": "set_field",
             "field": "status",
             "value": "prospect"
           }
@@ -391,7 +397,7 @@
     },
     {
       "direction": "client",
-      "description": "Client reports all five fill/select actions succeeded with state snapshot",
+      "description": "Client reports all five set_field actions succeeded with state snapshot",
       "message": {
         "type": "result",
         "seq": 2,
@@ -524,35 +530,30 @@
     },
     {
       "direction": "server",
-      "description": "Step 5: Fill all deal fields",
+      "description": "Step 5: Set all deal fields",
       "message": {
         "type": "command",
         "seq": 6,
         "actions": [
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "dealName",
-            "value": "Acme Corp - Enterprise License",
-            "animate": "typewriter",
-            "speed": 25
+            "value": "Acme Corp - Enterprise License"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "value",
-            "value": 50000,
-            "animate": "count_up"
+            "value": 50000
           },
           {
-            "do": "select",
+            "do": "set_field",
             "field": "stage",
             "value": "proposal"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "contactLink",
-            "value": "Sarah Chen",
-            "animate": "typewriter",
-            "speed": 30
+            "value": "Sarah Chen"
           }
         ]
       }

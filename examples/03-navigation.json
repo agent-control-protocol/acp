@@ -1,5 +1,5 @@
 {
-  "_comment": "Navigation: Agent navigates an e-commerce admin panel, scrolls to a field, highlights it, and focuses it. Demonstrates navigate, scroll_to, highlight, and focus actions across multiple command sequences.",
+  "_comment": "Navigation: Agent navigates an e-commerce admin panel between screens. Demonstrates navigate action and screen transitions.",
   "steps": [
     {
       "direction": "server",
@@ -193,10 +193,10 @@
     },
     {
       "direction": "client",
-      "description": "User asks to navigate to products and highlight the price field",
+      "description": "User asks to navigate to products page",
       "message": {
         "type": "text",
-        "message": "Show me the products page and highlight the price field"
+        "message": "Show me the products page"
       }
     },
     {
@@ -213,7 +213,7 @@
       "message": {
         "type": "chat",
         "from": "agent",
-        "message": "I'll take you to the products page and highlight the price field.",
+        "message": "I'll take you to the products page.",
         "final": true
       }
     },
@@ -252,42 +252,6 @@
     },
     {
       "direction": "server",
-      "description": "Server scrolls to the price field, highlights it, and sets focus",
-      "message": {
-        "type": "command",
-        "seq": 2,
-        "actions": [
-          {
-            "do": "scroll_to",
-            "field": "price"
-          },
-          {
-            "do": "highlight",
-            "field": "price",
-            "duration": 3000
-          },
-          {
-            "do": "focus",
-            "field": "price"
-          }
-        ]
-      }
-    },
-    {
-      "direction": "client",
-      "description": "Client confirms all three UI actions succeeded",
-      "message": {
-        "type": "result",
-        "seq": 2,
-        "results": [
-          { "index": 0, "success": true },
-          { "index": 1, "success": true },
-          { "index": 2, "success": true }
-        ]
-      }
-    },
-    {
-      "direction": "server",
       "description": "Server returns to idle",
       "message": {
         "type": "status",
@@ -300,7 +264,7 @@
       "message": {
         "type": "chat",
         "from": "agent",
-        "message": "You're now on the products page. The price field is highlighted and ready for input.",
+        "message": "You're now on the products page. What would you like to do?",
         "final": true
       }
     }

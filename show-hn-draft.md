@@ -14,13 +14,13 @@ We're open-sourcing ACP (Agent Control Protocol), a protocol specification that 
 
 **The gap we saw:** AI agents can access data and tools (MCP), coordinate with each other (A2A), stream events to frontends (AG-UI), and even generate new UI components (A2UI). But none of these protocols let an agent operate an application's existing interface. If you have a form with 20 fields, no current protocol gives the agent a way to fill them.
 
-**How ACP works:** The application sends a manifest describing its screens, fields, and actions -- this is the agent's map of the UI. The user sends natural language ("fill the contact form with my details"). The agent responds with structured commands (`fill`, `click`, `navigate`, `select`). An SDK on the application side executes those commands against the live interface and reports results back, per action, with sequence IDs for reliable multi-step workflows.
+**How ACP works:** The application sends a manifest describing its screens, fields, and actions -- this is the agent's map of the UI. The user sends natural language ("fill the contact form with my details"). The agent responds with structured commands (`set_field`, `click`, `navigate`). An SDK on the application side executes those commands against the live interface and reports results back, per action, with sequence IDs for reliable multi-step workflows.
 
 **What's in this release:**
 
 - Formal specification (SPEC.md, 1500+ lines, RFC-style)
 - JSON Schema for all message types
-- 14 UI actions: navigate, fill, clear, select, click, highlight, focus, scroll_to, show_toast, ask_confirm, open_modal, close_modal, enable, disable
+- 8 UI actions: navigate, set_field, clear, click, show_toast, ask_confirm, open_modal, close_modal
 - 15 field types (text, number, currency, date, email, select, autocomplete, file, etc.)
 - 5 annotated example message exchanges
 - Conformance test suite for validating implementations
@@ -53,7 +53,7 @@ OPENAI_API_KEY=sk-... npx @acprotocol/server
 
 **What we'd love feedback on:**
 
-- Is the action set (14 actions) sufficient for your use cases? What's missing?
+- Is the action set (8 actions) sufficient for your use cases? What's missing?
 - Should we publish reference SDK implementations (React, Flutter) as open source?
 - Interest in AG-UI + ACP integration -- AG-UI for streaming, ACP for UI control?
 

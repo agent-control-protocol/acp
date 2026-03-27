@@ -10,7 +10,7 @@ The conformance suite covers three areas:
 
 - **Message exchange sequences.** ACP defines specific handshake and lifecycle sequences (e.g., `config` / `manifest`, session establishment, graceful disconnect). The suite replays these sequences against your implementation and verifies that responses arrive in the correct order with the expected content.
 
-- **Action coverage.** Each action type defined in the spec (e.g., `fill`, `clear`, `select`, `click`, `navigate`, `highlight`, `focus`, `scroll_to`, `enable`, `disable`, `show_toast`, `ask_confirm`, `open_modal`, `close_modal`) has dedicated test cases that exercise both the happy path and common error conditions. The suite verifies that your implementation handles action requests, emits proper action results, and rejects malformed payloads with appropriate error codes.
+- **Action coverage.** Each action type defined in the spec (`navigate`, `set_field`, `clear`, `click`, `show_toast`, `ask_confirm`, `open_modal`, `close_modal`) has dedicated test cases that exercise both the happy path and common error conditions. The suite verifies that your implementation handles action requests, emits proper action results, and rejects malformed payloads with appropriate error codes.
 
 ## Prerequisites
 

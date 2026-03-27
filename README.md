@@ -3,7 +3,7 @@
 **An open protocol that lets AI agents control existing application interfaces.**
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Spec Version](https://img.shields.io/badge/spec-v1-green.svg)](spec/acp-v1.json)
+[![Spec Version](https://img.shields.io/badge/spec-v1.1-green.svg)](spec/acp-v1.json)
 [![Status](https://img.shields.io/badge/status-draft-orange.svg)](spec/SPEC.md)
 
 ---
@@ -22,7 +22,7 @@ Existing protocols let agents access data (MCP), coordinate with other agents (A
 
 AG-UI streams events, but the frontend must implement handlers for every action -- the agent cannot fill a form field on its own. A2UI generates new declarative UI components, but it cannot touch the application's existing screens.
 
-ACP fills this gap. The application declares its UI structure through a manifest, and the agent sends structured commands -- `fill`, `click`, `navigate`, `select` -- that the SDK executes against the live interface.
+ACP fills this gap. The application declares its UI structure through a manifest, and the agent sends structured commands -- `set_field`, `click`, `navigate` -- that the SDK executes against the live interface.
 
 ## Try It
 
@@ -45,7 +45,7 @@ Type *"Register my dog Max, owner Sarah Connor, sarah@skynet.com"* and watch the
 
 **2. Converse** -- The user sends natural-language text. The agent interprets intent using the manifest as context, knowing exactly what fields exist, what actions are available, and what screens can be navigated to.
 
-**3. Execute** -- The agent sends UI commands (`fill`, `click`, `navigate`). The SDK on the application side executes them against the live interface and reports results back.
+**3. Execute** -- The agent sends UI commands (`set_field`, `click`, `navigate`). The SDK on the application side executes them against the live interface and reports results back.
 
 ```
  User         Application (SDK)         Agent (Engine)
@@ -56,10 +56,11 @@ Type *"Register my dog Max, owner Sarah Connor, sarah@skynet.com"* and watch the
   |                  |----------------------->|
   |                  |                        |  (understands UI structure,
   |                  |                        |   plans commands)
-  |                  |   commands: fill,click  |
+  |                  |   commands: set_field,  |
+  |                  |   click                 |
   |                  |<-----------------------|
   |                  |                        |
-  |  (fields fill,   |   results: ok/fail     |
+  |  (fields set,    |   results: ok/fail     |
   |   button clicks) |----------------------->|
   |                  |                        |
   |                  |   chat: "Done, form    |
@@ -112,9 +113,9 @@ Then user sends text:
   "type": "command",
   "seq": 1,
   "actions": [
-    { "do": "fill", "field": "name", "value": "Alice Park" },
-    { "do": "fill", "field": "email", "value": "alice@example.com" },
-    { "do": "fill", "field": "message", "value": "Hello, I need help resetting my account. Could you assist me with this? Thank you." },
+    { "do": "set_field", "field": "name", "value": "Alice Park" },
+    { "do": "set_field", "field": "email", "value": "alice@example.com" },
+    { "do": "set_field", "field": "message", "value": "Hello, I need help resetting my account. Could you assist me with this? Thank you." },
     { "do": "click", "action": "submit" }
   ]
 }
@@ -139,7 +140,7 @@ The agent sees the manifest, understands the UI, and operates it with structured
 
 ## What ACP Defines
 
-- **14 UI Actions**: `navigate`, `fill`, `clear`, `select`, `click`, `highlight`, `focus`, `scroll_to`, `show_toast`, `ask_confirm`, `open_modal`, `close_modal`, `enable`, `disable`
+- **8 UI Actions**: `navigate`, `set_field`, `clear`, `click`, `show_toast`, `ask_confirm`, `open_modal`, `close_modal`
 
 - **15 Field Types**: `text`, `number`, `currency`, `date`, `datetime`, `email`, `phone`, `masked`, `select`, `autocomplete`, `checkbox`, `radio`, `textarea`, `file`, `hidden`
 

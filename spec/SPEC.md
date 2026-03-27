@@ -1,8 +1,8 @@
 # Agent Control Protocol (ACP) Specification
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Draft
-**Date:** 2026-03-23
+**Date:** 2026-03-27
 **Schema:** `acp-v1.json`
 
 ---
@@ -21,7 +21,7 @@ platform-agnostic and works with any UI framework -- web, mobile, or desktop.
 
 ## 2. Status of This Document
 
-This is a **draft specification** for ACP version 1.0. It is published for
+This is a **draft specification** for ACP version 1.1. It is published for
 review and early implementation feedback. Comments and suggestions are welcome
 via GitHub issues on the protocol repository.
 
@@ -215,7 +215,7 @@ Client (SDK)                            Server (Engine)
     |                                        |
     |--- text (user message) --------------->|  (5)
     |<----------------- status (thinking) ---|  (6)
-    |<----- chat_token / chat (response) ----|  (7)
+    |<-------- chat (delta / final) ----------|  (7)
     |<------------- command (UI actions) ----|  (8)
     |--- result (execution results) -------->|  (9)
     |                                        |
@@ -273,7 +273,7 @@ an invalid state SHOULD result in an `error` message with code `invalid_message`
                        │ text message                       │
                        ▼                                    │
               ┌─────────────────┐                           │
-              │                 │  chat / chat_token         │
+              │                 │  chat (delta/final)        │
               │    THINKING     │──────────────────►(stream) │
               │ (LLM processing)│                           │
               │                 │                           │
@@ -296,8 +296,8 @@ an invalid state SHOULD result in an `error` message with code `invalid_message`
 |-------|----------------|----------------------|----------------------|
 | CONNECTED | WebSocket opened | *(none — await config)* | `config` |
 | CONFIGURING | `config` received | `manifest` | `error` |
-| IDLE | Manifest processed or agent loop complete | `text`, `state`, `llm_config`, `response_lang_config` | `chat`, `chat_token`, `status`, `error` |
-| THINKING | User text sent or result received | *(none — await agent)* | `chat_token`, `chat`, `command`, `status`, `error` |
+| IDLE | Manifest processed or agent loop complete | `text`, `state`, `llm_config`, `response_lang_config` | `chat`, `status`, `error` |
+| THINKING | User text sent or result received | *(none — await agent)* | `chat`, `command`, `status`, `error` |
 | EXECUTING | `command` sent to SDK | `result`, `confirm` | `error` |
 | DISCONNECTED | WebSocket closed | *(none)* | *(none)* |
 
@@ -670,9 +670,9 @@ action type.
     "type": "command",
     "seq": 1,
     "actions": [
-        { "do": "fill", "field": "first_name", "value": "John" },
-        { "do": "fill", "field": "last_name", "value": "Doe" },
-        { "do": "fill", "field": "email", "value": "john@example.com" },
+        { "do": "set_field", "field": "first_name", "value": "John" },
+        { "do": "set_field", "field": "last_name", "value": "Doe" },
+        { "do": "set_field", "field": "email", "value": "john@example.com" },
         { "do": "click", "action": "save" }
     ]
 }
@@ -684,7 +684,10 @@ action type.
 
 **Direction:** Server to Client
 
-Delivers a complete chat message from the agent (or system).
+Delivers a chat message from the agent (or system). This message type is also
+used for streaming: when `delta` is `true`, the `message` field contains a text
+fragment (token) of the agent's response. See [Section 14: Streaming](#14-streaming)
+for details.
 
 **Required fields:**
 
@@ -692,15 +695,19 @@ Delivers a complete chat message from the agent (or system).
 |-------|------|-------------|
 | `type` | `"chat"` | Message type discriminator. |
 | `from` | string | Message sender. One of: `"agent"`, `"user"`, `"system"`. |
-| `message` | string | The complete message text. |
+| `message` | string | The message text (complete message or streaming token). |
 
 **Optional fields:**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `final` | boolean | When `true`, indicates this message concludes a streaming sequence (see Section 14). |
+| `final` | boolean | When `true`, indicates this is the complete, final message (concludes a streaming sequence). |
+| `delta` | boolean | When `true`, indicates this is a streaming token (a fragment of the full response). |
 
-**Example:**
+> **Note:** `delta` and `final` are mutually exclusive. A message MUST NOT have
+> both `delta: true` and `final: true`.
+
+**Example (final message):**
 
 ```json
 {
@@ -711,34 +718,20 @@ Delivers a complete chat message from the agent (or system).
 }
 ```
 
----
-
-#### 9.2.4 chat_token
-
-**Direction:** Server to Client
-
-Delivers a single token (text fragment) of a streaming agent response. See
-[Section 14: Streaming](#14-streaming) for details.
-
-**Required fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `type` | `"chat_token"` | Message type discriminator. |
-| `token` | string | A fragment of the agent's response. |
-
-**Example:**
+**Example (streaming token):**
 
 ```json
 {
-    "type": "chat_token",
-    "token": "I've filled"
+    "type": "chat",
+    "from": "agent",
+    "message": "I've filled",
+    "delta": true
 }
 ```
 
 ---
 
-#### 9.2.5 status
+#### 9.2.4 status
 
 **Direction:** Server to Client
 
@@ -770,7 +763,7 @@ Informs the SDK of the agent's current processing status.
 
 ---
 
-#### 9.2.6 error
+#### 9.2.5 error
 
 **Direction:** Server to Client
 
@@ -1092,27 +1085,27 @@ is open, the SDK MAY treat this as a no-op and report success.
 
 ### 12.2 Parallel Actions
 
-#### 12.2.1 fill
+#### 12.2.1 set_field
 
-Set the value of a field.
+Set the value of a field. This action handles all field types including text
+inputs, select dropdowns, radio buttons, and autocomplete fields.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `do` | `"fill"` | Yes | Action type. |
+| `do` | `"set_field"` | Yes | Action type. |
 | `field` | string | Yes | Target field ID. |
 | `value` | any | Yes | The value to set. |
-| `animate` | string | No | Animation style. One of: `"typewriter"`, `"count_up"`, `"fade_in"`, `"none"`. Default: `"none"`. |
-| `speed` | integer | No | Animation speed in milliseconds per step (>= 1). Default: implementation-defined. |
 
-**Behavior:** The SDK MUST set the specified field to the given value. If
-`animate` is specified with a value other than `"none"`, the SDK SHOULD render
-the value change using the specified animation. The `speed` parameter controls
-the delay between animation steps (e.g., between characters for `"typewriter"`).
+**Behavior:** The SDK MUST set the specified field to the given value. For
+`select`, `radio`, and `autocomplete` fields, the value MUST match one of the
+available options; if it does not, the SDK MUST report an error. Animation of
+value changes (e.g., typewriter effects) is a presentation concern left to the
+SDK implementation.
 
 **Example:**
 
 ```json
-{ "do": "fill", "field": "first_name", "value": "John", "animate": "typewriter", "speed": 50 }
+{ "do": "set_field", "field": "first_name", "value": "John" }
 ```
 
 ---
@@ -1133,128 +1126,6 @@ default empty state.
 
 ```json
 { "do": "clear", "field": "email" }
-```
-
----
-
-#### 12.2.3 select
-
-Choose an option in a selection field.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `do` | `"select"` | Yes | Action type. |
-| `field` | string | Yes | Target field ID (must be a `select`, `radio`, or `autocomplete` field). |
-| `value` | any | Yes | The value of the option to select. |
-
-**Behavior:** The SDK MUST select the option matching the given value. If the
-value does not match any available option, the SDK MUST report an error.
-
-**Example:**
-
-```json
-{ "do": "select", "field": "country", "value": "BR" }
-```
-
----
-
-#### 12.2.4 highlight
-
-Visually highlight a field to draw the user's attention.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `do` | `"highlight"` | Yes | Action type. |
-| `field` | string | Yes | Target field ID. |
-| `duration` | integer | No | Highlight duration in milliseconds (>= 0). Default: 2000. |
-
-**Behavior:** The SDK MUST visually distinguish the field (e.g., with a border
-color change, glow effect, or background color) for the specified duration. The
-SDK SHOULD also scroll the field into view if it is not currently visible.
-
-**Example:**
-
-```json
-{ "do": "highlight", "field": "phone", "duration": 3000 }
-```
-
----
-
-#### 12.2.5 focus
-
-Set keyboard focus to a field.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `do` | `"focus"` | Yes | Action type. |
-| `field` | string | Yes | Target field ID. |
-
-**Behavior:** The SDK MUST set keyboard focus to the specified field.
-
-**Example:**
-
-```json
-{ "do": "focus", "field": "email" }
-```
-
----
-
-#### 12.2.6 scroll_to
-
-Scroll a field into view.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `do` | `"scroll_to"` | Yes | Action type. |
-| `field` | string | Yes | Target field ID. |
-
-**Behavior:** The SDK MUST scroll the viewport so that the specified field is
-visible to the user.
-
-**Example:**
-
-```json
-{ "do": "scroll_to", "field": "notes" }
-```
-
----
-
-#### 12.2.7 enable
-
-Enable a disabled field.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `do` | `"enable"` | Yes | Action type. |
-| `field` | string | Yes | Target field ID. |
-
-**Behavior:** The SDK MUST enable the specified field, allowing user
-interaction.
-
-**Example:**
-
-```json
-{ "do": "enable", "field": "discount_code" }
-```
-
----
-
-#### 12.2.8 disable
-
-Disable a field.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `do` | `"disable"` | Yes | Action type. |
-| `field` | string | Yes | Target field ID. |
-
-**Behavior:** The SDK MUST disable the specified field, preventing user
-interaction.
-
-**Example:**
-
-```json
-{ "do": "disable", "field": "total" }
 ```
 
 ---
@@ -1324,23 +1195,25 @@ violation.
 
 ## 14. Streaming
 
-The engine MAY stream agent responses incrementally using `chat_token` messages.
+The engine MAY stream agent responses incrementally using `chat` messages with
+`delta: true`.
 
 ### 14.1 Streaming Sequence
 
-1. The engine sends zero or more `chat_token` messages, each containing a
-   `token` field with a text fragment.
+1. The engine sends zero or more `chat` messages with `delta: true`, each
+   containing a `message` field with a text fragment (token).
 2. The engine sends a `chat` message containing the complete response, with
-   `final` set to `true`.
+   `final: true`.
 
 ### 14.2 SDK Behavior
 
-- SDKs SHOULD render `chat_token` messages in real-time to provide a responsive
-  user experience (e.g., character-by-character or word-by-word display).
-- When the final `chat` message arrives, SDKs SHOULD replace the accumulated
-  tokens with the complete message to ensure accuracy.
-- SDKs that do not support streaming MAY ignore `chat_token` messages and only
-  render the final `chat` message.
+- SDKs SHOULD render `chat` messages with `delta: true` in real-time to provide
+  a responsive user experience (e.g., character-by-character or word-by-word
+  display).
+- When the final `chat` message arrives (with `final: true`), SDKs SHOULD
+  replace the accumulated tokens with the complete message to ensure accuracy.
+- SDKs that do not support streaming MAY ignore `chat` messages with
+  `delta: true` and only render the final `chat` message.
 
 ---
 
@@ -1385,7 +1258,7 @@ When the agent references a field that does not exist in the current screen:
 
 ```json
 // Engine sends command
-{ "type": "command", "seq": 3, "actions": [{ "do": "fill", "field": "nonexistent_field", "value": "test" }] }
+{ "type": "command", "seq": 3, "actions": [{ "do": "set_field", "field": "nonexistent_field", "value": "test" }] }
 
 // SDK returns error result
 { "type": "result", "seq": 3, "results": [{ "index": 0, "success": false, "error": "Field 'nonexistent_field' not found on screen 'main'" }] }
@@ -1400,7 +1273,7 @@ When the agent provides a value incompatible with the field type:
 
 ```json
 // Engine sends command (text value for number field)
-{ "type": "command", "seq": 4, "actions": [{ "do": "fill", "field": "age", "value": "not-a-number" }] }
+{ "type": "command", "seq": 4, "actions": [{ "do": "set_field", "field": "age", "value": "not-a-number" }] }
 
 // SDK returns error result
 { "type": "result", "seq": 4, "results": [{ "index": 0, "success": false, "error": "Field 'age' expects a numeric value" }] }
@@ -1566,10 +1439,10 @@ An implementation is considered ACP-compliant if it satisfies all of the
 following requirements:
 
 1. **Message types.** The implementation MUST support all core message types
-   defined in this specification (7 client message types and 6 server message
+   defined in this specification (7 client message types and 5 server message
    types).
 
-2. **UI actions.** The implementation MUST support all 14 UI action types
+2. **UI actions.** The implementation MUST support all 8 UI action types
    defined in [Section 12](#12-ui-actions).
 
 3. **Connection lifecycle.** The implementation MUST follow the connection
@@ -1589,13 +1462,13 @@ following requirements:
 ### 19.2 Conformance Levels
 
 - **ACP Engine Conformant:** The server implementation satisfies all engine-side
-  requirements (sends valid `config`, `command`, `chat`, `chat_token`, `status`,
-  and `error` messages; correctly processes all client message types).
+  requirements (sends valid `config`, `command`, `chat`, `status`, and `error`
+  messages; correctly processes all client message types).
 
 - **ACP SDK Conformant:** The client implementation satisfies all SDK-side
   requirements (sends valid `manifest`, `text`, `state`, `result`, `confirm`,
   `llm_config`, and `response_lang_config` messages; correctly executes all
-  14 UI actions; correctly processes all server message types).
+  8 UI actions; correctly processes all server message types).
 
 ### 19.3 Conformance Test Suite
 
@@ -1625,8 +1498,7 @@ in the suite before claiming conformance.
 |------|----------------|-----------------|-------------|
 | `config` | `type`, `sessionId` | `features`, `providers`, `current_provider` | Session configuration. |
 | `command` | `type`, `seq`, `actions` | -- | UI actions to execute. |
-| `chat` | `type`, `from`, `message` | `final` | Agent chat message. |
-| `chat_token` | `type`, `token` | -- | Streaming chat token. |
+| `chat` | `type`, `from`, `message` | `final`, `delta` | Agent chat message (also used for streaming tokens). |
 | `status` | `type`, `status` | -- | Agent status update. |
 | `error` | `type`, `message` | `code` | Error notification. |
 

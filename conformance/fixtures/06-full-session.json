@@ -217,26 +217,32 @@
     },
     {
       "direction": "server_to_client",
-      "description": "Server streams first chat token",
+      "description": "Server streams first chat delta",
       "message": {
-        "type": "chat_token",
-        "token": "I'll "
+        "type": "chat",
+        "from": "agent",
+        "message": "I'll ",
+        "delta": true
       }
     },
     {
       "direction": "server_to_client",
-      "description": "Server streams second chat token",
+      "description": "Server streams second chat delta",
       "message": {
-        "type": "chat_token",
-        "token": "set up "
+        "type": "chat",
+        "from": "agent",
+        "message": "set up ",
+        "delta": true
       }
     },
     {
       "direction": "server_to_client",
-      "description": "Server streams third chat token",
+      "description": "Server streams third chat delta",
       "message": {
-        "type": "chat_token",
-        "token": "the deal now."
+        "type": "chat",
+        "from": "agent",
+        "message": "the deal now.",
+        "delta": true
       }
     },
     {
@@ -287,35 +293,30 @@
     },
     {
       "direction": "server_to_client",
-      "description": "Server fills all deal fields in parallel with animations",
+      "description": "Server sets all deal fields in parallel",
       "message": {
         "type": "command",
         "seq": 2,
         "actions": [
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "contact",
-            "value": "Initech Corporation",
-            "animate": "typewriter",
-            "speed": 25
+            "value": "Initech Corporation"
           },
           {
-            "do": "select",
+            "do": "set_field",
             "field": "stage",
             "value": "lead"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "amount",
-            "value": 5000.00,
-            "animate": "count_up"
+            "value": 5000.00
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "notes",
-            "value": "Consulting services engagement, initial discovery phase per contract #2024-001",
-            "animate": "typewriter",
-            "speed": 20
+            "value": "Consulting services engagement, initial discovery phase per contract #2024-001"
           }
         ]
       }
@@ -374,71 +375,6 @@
     },
     {
       "direction": "server_to_client",
-      "description": "Server highlights the contact field to draw user attention",
-      "message": {
-        "type": "command",
-        "seq": 3,
-        "actions": [
-          {
-            "do": "highlight",
-            "field": "contact",
-            "duration": 1500
-          }
-        ]
-      }
-    },
-    {
-      "direction": "client_to_server",
-      "description": "Client reports highlight completed successfully",
-      "message": {
-        "type": "result",
-        "seq": 3,
-        "results": [
-          {
-            "index": 0,
-            "success": true
-          }
-        ]
-      }
-    },
-    {
-      "direction": "server_to_client",
-      "description": "Server scrolls to and focuses the notes field",
-      "message": {
-        "type": "command",
-        "seq": 4,
-        "actions": [
-          {
-            "do": "scroll_to",
-            "field": "notes"
-          },
-          {
-            "do": "focus",
-            "field": "notes"
-          }
-        ]
-      }
-    },
-    {
-      "direction": "client_to_server",
-      "description": "Client reports scroll and focus completed successfully",
-      "message": {
-        "type": "result",
-        "seq": 4,
-        "results": [
-          {
-            "index": 0,
-            "success": true
-          },
-          {
-            "index": 1,
-            "success": true
-          }
-        ]
-      }
-    },
-    {
-      "direction": "server_to_client",
       "description": "Server sends chat message asking for creation confirmation",
       "message": {
         "type": "chat",
@@ -452,7 +388,7 @@
       "description": "Server asks for user confirmation before creating the deal",
       "message": {
         "type": "command",
-        "seq": 5,
+        "seq": 3,
         "actions": [
           {
             "do": "ask_confirm",
@@ -466,7 +402,7 @@
       "description": "User confirms the deal creation",
       "message": {
         "type": "confirm",
-        "seq": 5,
+        "seq": 3,
         "confirmed": true
       }
     },
@@ -483,7 +419,7 @@
       "description": "Server clicks the create_deal action button",
       "message": {
         "type": "command",
-        "seq": 6,
+        "seq": 4,
         "actions": [
           {
             "do": "click",
@@ -497,7 +433,7 @@
       "description": "Client reports create action clicked successfully",
       "message": {
         "type": "result",
-        "seq": 6,
+        "seq": 4,
         "results": [
           {
             "index": 0,
@@ -511,7 +447,7 @@
       "description": "Server shows a success toast with the deal ID",
       "message": {
         "type": "command",
-        "seq": 7,
+        "seq": 5,
         "actions": [
           {
             "do": "show_toast",
@@ -527,7 +463,7 @@
       "description": "Client reports toast shown successfully",
       "message": {
         "type": "result",
-        "seq": 7,
+        "seq": 5,
         "results": [
           {
             "index": 0,

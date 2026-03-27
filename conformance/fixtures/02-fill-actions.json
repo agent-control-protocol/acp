@@ -1,7 +1,7 @@
 {
-  "id": "fill-actions",
-  "name": "Fill, Clear, and Select Actions",
-  "description": "Tests fill with typewriter/count_up animation, select, and clear actions",
+  "id": "set-field-actions",
+  "name": "Set Field and Clear Actions",
+  "description": "Tests set_field and clear actions",
   "steps": [
     {
       "direction": "server_to_client",
@@ -147,35 +147,30 @@
     },
     {
       "direction": "server_to_client",
-      "description": "Server sends command with fill (typewriter + count_up), select, and fill actions",
+      "description": "Server sends command with set_field actions for all deal fields",
       "message": {
         "type": "command",
         "seq": 1,
         "actions": [
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "contact",
-            "value": "Globex Corporation",
-            "animate": "typewriter",
-            "speed": 30
+            "value": "Globex Corporation"
           },
           {
-            "do": "select",
+            "do": "set_field",
             "field": "stage",
             "value": "qualified"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "amount",
-            "value": 2500.00,
-            "animate": "count_up"
+            "value": 2500.00
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "notes",
-            "value": "Enterprise software license, qualified via demo call",
-            "animate": "typewriter",
-            "speed": 20
+            "value": "Enterprise software license, qualified via demo call"
           }
         ]
       }

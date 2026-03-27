@@ -1,7 +1,7 @@
 {
   "id": "ui-actions",
-  "name": "Highlight, Enable, Disable, and Toast Actions",
-  "description": "Tests highlight, enable, disable, and show_toast actions",
+  "name": "Toast Actions",
+  "description": "Tests show_toast action with different levels and durations",
   "steps": [
     {
       "direction": "server_to_client",
@@ -79,24 +79,11 @@
     },
     {
       "direction": "server_to_client",
-      "description": "Server disables amount and stage fields, highlights contact, and shows a warning toast",
+      "description": "Server shows a warning toast",
       "message": {
         "type": "command",
         "seq": 1,
         "actions": [
-          {
-            "do": "disable",
-            "field": "amount"
-          },
-          {
-            "do": "disable",
-            "field": "stage"
-          },
-          {
-            "do": "highlight",
-            "field": "contact",
-            "duration": 3000
-          },
           {
             "do": "show_toast",
             "message": "Please select a contact first",
@@ -108,7 +95,7 @@
     },
     {
       "direction": "client_to_server",
-      "description": "Client reports all four actions executed successfully",
+      "description": "Client reports toast shown successfully",
       "message": {
         "type": "result",
         "seq": 1,
@@ -116,40 +103,20 @@
           {
             "index": 0,
             "success": true
-          },
-          {
-            "index": 1,
-            "success": true
-          },
-          {
-            "index": 2,
-            "success": true
-          },
-          {
-            "index": 3,
-            "success": true
           }
         ]
       }
     },
     {
       "direction": "server_to_client",
-      "description": "Server re-enables amount and stage fields and shows a success toast",
+      "description": "Server shows a success toast",
       "message": {
         "type": "command",
         "seq": 2,
         "actions": [
           {
-            "do": "enable",
-            "field": "amount"
-          },
-          {
-            "do": "enable",
-            "field": "stage"
-          },
-          {
             "do": "show_toast",
-            "message": "Fields enabled successfully",
+            "message": "Operation completed successfully",
             "level": "success"
           }
         ]
@@ -157,21 +124,13 @@
     },
     {
       "direction": "client_to_server",
-      "description": "Client reports all three actions executed successfully",
+      "description": "Client reports toast shown successfully",
       "message": {
         "type": "result",
         "seq": 2,
         "results": [
           {
             "index": 0,
-            "success": true
-          },
-          {
-            "index": 1,
-            "success": true
-          },
-          {
-            "index": 2,
             "success": true
           }
         ]

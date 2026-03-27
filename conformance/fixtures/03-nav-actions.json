@@ -1,7 +1,7 @@
 {
   "id": "nav-actions",
-  "name": "Navigate, Click, ScrollTo, and Focus Actions",
-  "description": "Tests navigate, click, scroll_to, and focus actions",
+  "name": "Navigate and Click Actions",
+  "description": "Tests navigate and click actions",
   "steps": [
     {
       "direction": "server_to_client",
@@ -183,46 +183,10 @@
     },
     {
       "direction": "server_to_client",
-      "description": "Server sends scroll_to and focus on the contact field in parallel",
-      "message": {
-        "type": "command",
-        "seq": 2,
-        "actions": [
-          {
-            "do": "scroll_to",
-            "field": "contact"
-          },
-          {
-            "do": "focus",
-            "field": "contact"
-          }
-        ]
-      }
-    },
-    {
-      "direction": "client_to_server",
-      "description": "Client confirms scroll_to and focus both succeeded",
-      "message": {
-        "type": "result",
-        "seq": 2,
-        "results": [
-          {
-            "index": 0,
-            "success": true
-          },
-          {
-            "index": 1,
-            "success": true
-          }
-        ]
-      }
-    },
-    {
-      "direction": "server_to_client",
       "description": "Server sends click action on the cancel button",
       "message": {
         "type": "command",
-        "seq": 3,
+        "seq": 2,
         "actions": [
           {
             "do": "click",
@@ -236,7 +200,7 @@
       "description": "Client confirms click action succeeded",
       "message": {
         "type": "result",
-        "seq": 3,
+        "seq": 2,
         "results": [
           {
             "index": 0,

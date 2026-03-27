@@ -1,5 +1,5 @@
 {
-  "_comment": "Form filling: Agent fills a contact form with typewriter animations, streaming chat tokens, and proper status transitions. Demonstrates fill actions with different field types, chat_token streaming, and state snapshots in results.",
+  "_comment": "Form filling: Agent fills a contact form using set_field actions with streaming chat deltas and proper status transitions. Demonstrates set_field actions with different field types, chat delta streaming, and state snapshots in results.",
   "steps": [
     {
       "direction": "server",
@@ -125,50 +125,62 @@
     },
     {
       "direction": "server",
-      "description": "Server streams first chat token",
+      "description": "Server streams first chat delta",
       "message": {
-        "type": "chat_token",
-        "token": "I'll"
+        "type": "chat",
+        "from": "agent",
+        "message": "I'll",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams second chat token",
+      "description": "Server streams second chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " fill"
+        "type": "chat",
+        "from": "agent",
+        "message": " fill",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams third chat token",
+      "description": "Server streams third chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " the"
+        "type": "chat",
+        "from": "agent",
+        "message": " the",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams fourth chat token",
+      "description": "Server streams fourth chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " contact"
+        "type": "chat",
+        "from": "agent",
+        "message": " contact",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams fifth chat token",
+      "description": "Server streams fifth chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " form"
+        "type": "chat",
+        "from": "agent",
+        "message": " form",
+        "delta": true
       }
     },
     {
       "direction": "server",
-      "description": "Server streams sixth chat token",
+      "description": "Server streams sixth chat delta",
       "message": {
-        "type": "chat_token",
-        "token": " for you."
+        "type": "chat",
+        "from": "agent",
+        "message": " for you.",
+        "delta": true
       }
     },
     {
@@ -191,45 +203,37 @@
     },
     {
       "direction": "server",
-      "description": "Server sends command to fill all four form fields with animations",
+      "description": "Server sends command to set all four form fields",
       "message": {
         "type": "command",
         "seq": 1,
         "actions": [
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "name",
-            "value": "John Doe",
-            "animate": "typewriter",
-            "speed": 30
+            "value": "John Doe"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "email",
-            "value": "john@example.com",
-            "animate": "typewriter",
-            "speed": 20
+            "value": "john@example.com"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "phone",
-            "value": "+1-555-0123",
-            "animate": "typewriter",
-            "speed": 25
+            "value": "+1-555-0123"
           },
           {
-            "do": "fill",
+            "do": "set_field",
             "field": "message",
-            "value": "Hi, I'm interested in scheduling a product demo. Could you please provide available time slots and any prerequisites I should be aware of? Thank you!",
-            "animate": "typewriter",
-            "speed": 15
+            "value": "Hi, I'm interested in scheduling a product demo. Could you please provide available time slots and any prerequisites I should be aware of? Thank you!"
           }
         ]
       }
     },
     {
       "direction": "client",
-      "description": "Client reports all four fill actions succeeded with a state snapshot",
+      "description": "Client reports all four set_field actions succeeded with a state snapshot",
       "message": {
         "type": "result",
         "seq": 1,
