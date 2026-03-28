@@ -1,9 +1,9 @@
 # Agent Control Protocol (ACP) Specification
 
-**Version:** 1.1
+**Version:** 2.0
 **Status:** Draft
-**Date:** 2026-03-27
-**Schema:** `acp-v1.json`
+**Date:** 2026-03-28
+**Schema:** `acp-v2.json`
 
 ---
 

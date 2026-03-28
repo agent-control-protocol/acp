@@ -5,6 +5,19 @@ All notable changes to the ACP specification will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.0] - 2026-03-28
+
+### Changed
+
+- **Bumped protocol to v2**: New schema file `acp-v2.json` with updated `$id`, `title`, and `description`.
+- **Added Screen Description**: Screens can now include a `description` property for richer agent context.
+- **Added Session Resumption**: Clients can resume sessions via `sessionId` in the manifest message.
+- **Added Manifest Patching**: Clients can send partial manifest updates instead of full re-sends.
+
+### Notes
+
+- `acp-v1.json` is retained in the repository for backward compatibility.
+
 ## [1.1.0] - 2026-03-27
 
 ### Changed

@@ -3,7 +3,7 @@
 **An open protocol that lets AI agents control existing application interfaces.**
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Spec Version](https://img.shields.io/badge/spec-v1.1-green.svg)](spec/acp-v1.json)
+[![Spec Version](https://img.shields.io/badge/spec-v2.0-green.svg)](spec/acp-v2.json)
 [![Status](https://img.shields.io/badge/status-draft-orange.svg)](spec/SPEC.md)
 
 ---
@@ -170,7 +170,7 @@ The first production implementation is [Vocall Engine](https://primoia.ai) by Pr
 
 | Document | Description |
 |----------|-------------|
-| [`spec/acp-v1.json`](spec/acp-v1.json) | JSON Schema for all ACP message types |
+| [`spec/acp-v2.json`](spec/acp-v2.json) | JSON Schema for all ACP message types |
 | [`spec/SPEC.md`](spec/SPEC.md) | Formal specification (message lifecycle, error handling, sequencing) |
 | [`examples/`](examples/) | Annotated example message exchanges |
 | [`conformance/`](conformance/) | Conformance test suite for validating implementations |
