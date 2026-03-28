@@ -440,7 +440,7 @@
       <div class="step-card">
         <div class="step-number">Step 3</div>
         <h3>Execute</h3>
-        <p>The agent sends commands -- fill, click, navigate. The SDK executes them against the live UI and reports results back.</p>
+        <p>The agent sends commands -- set_field, click, navigate. The SDK executes them against the live UI and reports results back.</p>
       </div>
     </div>
   </div>
@@ -482,9 +482,9 @@
   <span class="jk">"type"</span><span class="jp">:</span> <span class="js">"command"</span><span class="jp">,</span>
   <span class="jk">"seq"</span><span class="jp">:</span> <span class="jn">1</span><span class="jp">,</span>
   <span class="jk">"actions"</span><span class="jp">:</span> <span class="jp">[</span>
-    <span class="jp">{</span> <span class="jk">"do"</span><span class="jp">:</span> <span class="js">"fill"</span><span class="jp">,</span> <span class="jk">"field"</span><span class="jp">:</span> <span class="js">"name"</span><span class="jp">,</span> <span class="jk">"value"</span><span class="jp">:</span> <span class="js">"Alice Park"</span> <span class="jp">},</span>
-    <span class="jp">{</span> <span class="jk">"do"</span><span class="jp">:</span> <span class="js">"fill"</span><span class="jp">,</span> <span class="jk">"field"</span><span class="jp">:</span> <span class="js">"email"</span><span class="jp">,</span> <span class="jk">"value"</span><span class="jp">:</span> <span class="js">"alice@example.com"</span> <span class="jp">},</span>
-    <span class="jp">{</span> <span class="jk">"do"</span><span class="jp">:</span> <span class="js">"fill"</span><span class="jp">,</span> <span class="jk">"field"</span><span class="jp">:</span> <span class="js">"message"</span><span class="jp">,</span> <span class="jk">"value"</span><span class="jp">:</span> <span class="js">"Hello, I need help resetting my account."</span> <span class="jp">},</span>
+    <span class="jp">{</span> <span class="jk">"do"</span><span class="jp">:</span> <span class="js">"set_field"</span><span class="jp">,</span> <span class="jk">"field"</span><span class="jp">:</span> <span class="js">"name"</span><span class="jp">,</span> <span class="jk">"value"</span><span class="jp">:</span> <span class="js">"Alice Park"</span> <span class="jp">},</span>
+    <span class="jp">{</span> <span class="jk">"do"</span><span class="jp">:</span> <span class="js">"set_field"</span><span class="jp">,</span> <span class="jk">"field"</span><span class="jp">:</span> <span class="js">"email"</span><span class="jp">,</span> <span class="jk">"value"</span><span class="jp">:</span> <span class="js">"alice@example.com"</span> <span class="jp">},</span>
+    <span class="jp">{</span> <span class="jk">"do"</span><span class="jp">:</span> <span class="js">"set_field"</span><span class="jp">,</span> <span class="jk">"field"</span><span class="jp">:</span> <span class="js">"message"</span><span class="jp">,</span> <span class="jk">"value"</span><span class="jp">:</span> <span class="js">"Hello, I need help resetting my account."</span> <span class="jp">},</span>
     <span class="jp">{</span> <span class="jk">"do"</span><span class="jp">:</span> <span class="js">"click"</span><span class="jp">,</span> <span class="jk">"action"</span><span class="jp">:</span> <span class="js">"submit"</span> <span class="jp">}</span>
   <span class="jp">]</span>
 <span class="jp">}</span></pre>
@@ -509,8 +509,8 @@
     <h2>Protocol At A Glance</h2>
     <div class="glance-grid">
       <div class="glance-item">
-        <h3>14 UI Actions</h3>
-        <p><code>navigate</code>, <code>fill</code>, <code>click</code>, <code>select</code>, <code>clear</code>, <code>highlight</code>, <code>focus</code>, <code>scroll_to</code>, <code>show_toast</code>, <code>ask_confirm</code>, <code>open_modal</code>, <code>close_modal</code>, <code>enable</code>, <code>disable</code></p>
+        <h3>8 UI Actions</h3>
+        <p><code>navigate</code>, <code>set_field</code>, <code>clear</code>, <code>click</code>, <code>show_toast</code>, <code>ask_confirm</code>, <code>open_modal</code>, <code>close_modal</code></p>
       </div>
       <div class="glance-item">
         <h3>15 Field Types</h3>
