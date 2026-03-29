@@ -7,11 +7,13 @@
 [![Status](https://img.shields.io/badge/status-draft-orange.svg)](spec/SPEC.md)
 [![Tests](https://img.shields.io/badge/tests-195_passing-brightgreen.svg)](https://github.com/agent-control-protocol/acp-server)
 
-<!-- TODO: Add demo GIF/video
-Place a ~15s recording showing the agent filling a form in real-time.
-Save as assets/demo.gif (~800px wide) and uncomment the line below:
--->
-<!-- <p align="center"><img src="assets/demo.gif" alt="ACP demo — agent filling a form in real-time" width="800"></p> -->
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=6nWLXdYwKUs">
+    <img src="https://img.youtube.com/vi/6nWLXdYwKUs/maxresdefault.jpg" alt="ACP demo — agent filling a form in real-time" width="800">
+  </a>
+  <br>
+  <sub>Click to watch: AI agent controlling a live application through ACP</sub>
+</p>
 
 **[Live Demo](https://primoia.ai/sandbox)** | **[Specification](spec/SPEC.md)** | **[Reference Server](https://github.com/agent-control-protocol/acp-server)** | **[Discussions](https://github.com/agent-control-protocol/acp/discussions)**
 
