@@ -1,34 +1,66 @@
 # ACP -- Agent Control Protocol
 
-**An open protocol that lets AI agents control existing application interfaces.**
+**ACP lets AI agents control any existing application through a structured protocol -- no vision models, no DOM scraping, no guessing.**
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Spec Version](https://img.shields.io/badge/spec-v2.0-green.svg)](spec/acp-v2.json)
 [![Status](https://img.shields.io/badge/status-draft-orange.svg)](spec/SPEC.md)
+[![Tests](https://img.shields.io/badge/tests-195_passing-brightgreen.svg)](https://github.com/agent-control-protocol/acp-server)
+
+<!-- TODO: Add demo GIF/video
+Place a ~15s recording showing the agent filling a form in real-time.
+Save as assets/demo.gif (~800px wide) and uncomment the line below:
+-->
+<!-- <p align="center"><img src="assets/demo.gif" alt="ACP demo — agent filling a form in real-time" width="800"></p> -->
+
+**[Live Demo](https://primoia.ai/sandbox)** | **[Specification](spec/SPEC.md)** | **[Reference Server](https://github.com/agent-control-protocol/acp-server)** | **[Discussions](https://github.com/agent-control-protocol/acp/discussions)**
 
 ---
 
-## The Gap
+## The Problem
 
+AI agents can access data (MCP), talk to other agents (A2A), stream events to frontends (AG-UI), and generate new UI (A2UI). But none of them allow an agent to **operate an existing application's interface** -- the screens, forms, and actions your users already work with.
+
+## How ACP Solves It
+
+The application declares its UI structure through a manifest. The agent sends structured commands -- `set_field`, `click`, `navigate` -- and the SDK executes them against the live interface.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant App as Application + SDK
+    participant Agent as Agent Engine
+
+    App->>Agent: manifest (screens, fields, actions)
+    User->>App: "Fill out the contact form"
+    App->>Agent: user message
+    Agent->>App: commands (set_field, click)
+    App->>Agent: results (ok/fail per action)
+    Agent->>App: chat "Done, form submitted."
+    App->>User: response + UI updated
 ```
-MCP  (Anthropic)    ->  LLM <-> Data/Tools
-A2A  (Google)       ->  Agent <-> Agent
-AG-UI (CopilotKit)  ->  Agent -> Frontend streaming
-A2UI (Google)       ->  Agent -> Generated UI
-ACP                 ->  Agent <-> Existing Application UI  <-- you are here
-```
 
-Existing protocols let agents access data (MCP), coordinate with other agents (A2A), stream events to frontends (AG-UI), and generate new UI (A2UI). None of them allow an agent to **operate an existing application's interface**.
+## How ACP Compares
 
-AG-UI streams events, but the frontend must implement handlers for every action -- the agent cannot fill a form field on its own. A2UI generates new declarative UI components, but it cannot touch the application's existing screens.
+| | ACP | MCP | A2A | AG-UI | RPA |
+|---|---|---|---|---|---|
+| **Purpose** | Agent controls existing UI | Agent accesses data/tools | Agent-to-agent coordination | Agent streams to frontend | Batch UI automation |
+| **Operates existing UI?** | Yes | No | No | No (frontend must implement handlers) | Yes (via vision/DOM) |
+| **Requires vision/DOM?** | No (structured manifest) | N/A | N/A | N/A | Yes |
+| **Real-time conversational?** | Yes | Yes | Yes | Yes | No |
+| **Multi-platform?** | Web, mobile, desktop | API-dependent | API-dependent | Web only | Platform-specific |
+| **Token cost** | Low (structured data) | Low | Low | Low | High (screenshots) |
+| **Fragile to UI changes?** | No (manifest-driven) | N/A | N/A | N/A | Yes |
 
-ACP fills this gap. The application declares its UI structure through a manifest, and the agent sends structured commands -- `set_field`, `click`, `navigate` -- that the SDK executes against the live interface.
+ACP is complementary to these protocols, not a replacement. Use MCP for data access, A2A for agent coordination, and ACP when the agent needs to operate application interfaces.
 
-## Try It
+## Getting Started
 
-**Live demo (no setup):** [primoia.ai/sandbox](https://primoia.ai/sandbox)
+### 1. Run the demo
 
-**Run locally:**
+**No setup required:** Try the [live sandbox](https://primoia.ai/sandbox).
+
+**Or run locally:**
 
 ```bash
 git clone https://github.com/agent-control-protocol/acp-demo.git
@@ -39,46 +71,14 @@ npm start              # open http://localhost:3098
 
 Type *"Register my dog Max, owner Sarah Connor, sarah@skynet.com"* and watch the agent fill the form.
 
-## How It Works
+### 2. Integrate ACP into your application
 
-**1. Describe** -- The application sends a manifest describing its screens, fields, actions, and modals. This is the agent's map of the interface.
-
-**2. Converse** -- The user sends natural-language text. The agent interprets intent using the manifest as context, knowing exactly what fields exist, what actions are available, and what screens can be navigated to.
-
-**3. Execute** -- The agent sends UI commands (`set_field`, `click`, `navigate`). The SDK on the application side executes them against the live interface and reports results back.
-
-```
- User         Application (SDK)         Agent (Engine)
-  |                  |                        |
-  |  "Fill out the   |                        |
-  |   contact form"  |                        |
-  |----------------->|   manifest + message    |
-  |                  |----------------------->|
-  |                  |                        |  (understands UI structure,
-  |                  |                        |   plans commands)
-  |                  |   commands: set_field,  |
-  |                  |   click                 |
-  |                  |<-----------------------|
-  |                  |                        |
-  |  (fields set,    |   results: ok/fail     |
-  |   button clicks) |----------------------->|
-  |                  |                        |
-  |                  |   chat: "Done, form    |
-  |                  |    submitted."         |
-  |                  |<-----------------------|
-  |  "Done, form     |                        |
-  |   submitted."    |                        |
-  |<-----------------|                        |
-```
-
-## Quick Example
-
-### 1. Application sends manifest
+**Application side (SDK)** -- Describe your UI as an ACP manifest:
 
 ```json
 {
   "type": "manifest",
-  "app": "contact-portal",
+  "app": "my-app",
   "currentScreen": "contact",
   "screens": {
     "contact": {
@@ -97,33 +97,45 @@ Type *"Register my dog Max, owner Sarah Connor, sarah@skynet.com"* and watch the
 }
 ```
 
-Then user sends text:
+Connect to an ACP-compliant engine via WebSocket, send the manifest, and handle incoming commands (`set_field`, `click`, etc.) against your UI. See the [demo source](https://github.com/agent-control-protocol/acp-demo) for a full working example.
 
-```json
-{
-  "type": "text",
-  "message": "Send a message to support. My name is Alice Park, email alice@example.com. Tell them I need help resetting my account."
-}
+**Agent side (Engine)** -- Use the reference server:
+
+```bash
+npm install @acprotocol/server
 ```
 
-### 2. Agent responds with commands
+```typescript
+import { createACPServer } from "@acprotocol/server";
+
+const server = createACPServer({
+  port: 3099,
+  openaiApiKey: process.env.OPENAI_API_KEY,
+});
+
+server.start();
+```
+
+The engine receives manifests, interprets user messages using the UI structure as context, and sends back commands. See the [reference server docs](https://github.com/agent-control-protocol/acp-server) for configuration options.
+
+### 3. Understand the message flow
+
+The user sends natural language. The agent reads the manifest, understands the UI, and responds with commands:
 
 ```json
+// Agent sends commands
 {
   "type": "command",
   "seq": 1,
   "actions": [
     { "do": "set_field", "field": "name", "value": "Alice Park" },
     { "do": "set_field", "field": "email", "value": "alice@example.com" },
-    { "do": "set_field", "field": "message", "value": "Hello, I need help resetting my account. Could you assist me with this? Thank you." },
+    { "do": "set_field", "field": "message", "value": "I need help resetting my account." },
     { "do": "click", "action": "submit" }
   ]
 }
-```
 
-### 3. SDK reports results
-
-```json
+// SDK reports results
 {
   "type": "result",
   "seq": 1,
@@ -135,8 +147,6 @@ Then user sends text:
   ]
 }
 ```
-
-The agent sees the manifest, understands the UI, and operates it with structured commands. No vision models. No DOM scraping. No guessing.
 
 ## What ACP Defines
 
