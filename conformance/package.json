@@ -1,11 +1,26 @@
 {
-  "name": "@acp-protocol/conformance",
-  "version": "2.0.0",
+  "name": "@acprotocol/conformance",
+  "version": "2.0.2",
   "description": "Conformance test suite for ACP (Agent Control Protocol) implementations",
   "license": "Apache-2.0",
+  "author": "Primoia Technologies (https://primoia.ai)",
+  "homepage": "https://acp-protocol.org",
+  "bugs": {
+    "url": "https://github.com/agent-control-protocol/acp/issues"
+  },
   "type": "module",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "fixtures",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "test": "node --test tests/**/*.test.js",
@@ -17,7 +32,8 @@
     "schema:diff": "node scripts/schema-diff.js"
   },
   "bin": {
-    "acp-conformance": "bin/check-conformance.js"
+    "acp-conformance": "bin/check-conformance.js",
+    "conformance": "bin/check-conformance.js"
   },
   "dependencies": {
     "ajv": "^8.17.1",
@@ -26,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agent-control-protocol/acp.git",
+    "url": "git+https://github.com/agent-control-protocol/acp.git",
     "directory": "conformance"
   },
   "keywords": [

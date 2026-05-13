@@ -1,7 +1,9 @@
 /**
  * UI Action Tests
  *
- * Validates all 14 UI actions by replaying action-specific fixtures
+ * Validates the 8 UI actions defined in the ACP schema
+ * (navigate, set_field, clear, click, show_toast, ask_confirm,
+ * open_modal, close_modal) by replaying action-specific fixtures
  * through the mock server and test client.
  */
 
@@ -72,30 +74,17 @@ function getActionsOfType(fixture, actionType) {
   return actions;
 }
 
-describe('Fill, Clear, and Select actions', () => {
+describe('Set field and clear actions', () => {
   it('should complete the fill-actions fixture without errors', async () => {
     const { results } = await runFixture(fixtureMap['fill-actions']);
     assert.equal(results.failed, 0, `Failures: ${JSON.stringify(results.errors, null, 2)}`);
   });
 
-  it('should include fill actions with typewriter animation', () => {
-    const fills = getActionsOfType(fixtureMap['fill-actions'], 'fill');
-    const withTypewriter = fills.filter((a) => a.animate === 'typewriter');
-    assert.ok(withTypewriter.length > 0, 'Should have at least one typewriter fill');
-    assert.ok(withTypewriter[0].speed > 0, 'Typewriter fill should have speed > 0');
-  });
-
-  it('should include fill actions with count_up animation', () => {
-    const fills = getActionsOfType(fixtureMap['fill-actions'], 'fill');
-    const withCountUp = fills.filter((a) => a.animate === 'count_up');
-    assert.ok(withCountUp.length > 0, 'Should have at least one count_up fill');
-  });
-
-  it('should include a select action', () => {
-    const selects = getActionsOfType(fixtureMap['fill-actions'], 'select');
-    assert.ok(selects.length > 0, 'Should have at least one select action');
-    assert.ok(selects[0].field, 'Select action should have a field');
-    assert.ok(selects[0].value !== undefined, 'Select action should have a value');
+  it('should include set_field with field and value', () => {
+    const sets = getActionsOfType(fixtureMap['fill-actions'], 'set_field');
+    assert.ok(sets.length > 0, 'Should have at least one set_field action');
+    assert.ok(sets[0].field, 'set_field should have a field');
+    assert.ok(sets[0].value !== undefined, 'set_field should have a value');
   });
 
   it('should include a clear action', () => {
@@ -113,7 +102,7 @@ describe('Fill, Clear, and Select actions', () => {
   });
 });
 
-describe('Navigate, Click, ScrollTo, and Focus actions', () => {
+describe('Navigate and Click actions', () => {
   it('should complete the nav-actions fixture without errors', async () => {
     const { results } = await runFixture(fixtureMap['nav-actions']);
     assert.equal(results.failed, 0, `Failures: ${JSON.stringify(results.errors, null, 2)}`);
@@ -130,35 +119,15 @@ describe('Navigate, Click, ScrollTo, and Focus actions', () => {
     assert.ok(clicks.length > 0);
     assert.ok(clicks[0].action, 'Click should have an action');
   });
-
-  it('should include scroll_to and focus actions', () => {
-    const scrolls = getActionsOfType(fixtureMap['nav-actions'], 'scroll_to');
-    const focuses = getActionsOfType(fixtureMap['nav-actions'], 'focus');
-    assert.ok(scrolls.length > 0, 'Should have scroll_to');
-    assert.ok(focuses.length > 0, 'Should have focus');
-  });
 });
 
-describe('Highlight, Enable, Disable, and Toast actions', () => {
+describe('Toast action', () => {
   it('should complete the ui-actions fixture without errors', async () => {
     const { results } = await runFixture(fixtureMap['ui-actions']);
     assert.equal(results.failed, 0, `Failures: ${JSON.stringify(results.errors, null, 2)}`);
   });
 
-  it('should include highlight with duration', () => {
-    const highlights = getActionsOfType(fixtureMap['ui-actions'], 'highlight');
-    assert.ok(highlights.length > 0);
-    assert.ok(highlights[0].duration > 0, 'Highlight should have duration');
-  });
-
-  it('should include enable and disable actions', () => {
-    const enables = getActionsOfType(fixtureMap['ui-actions'], 'enable');
-    const disables = getActionsOfType(fixtureMap['ui-actions'], 'disable');
-    assert.ok(enables.length > 0, 'Should have enable');
-    assert.ok(disables.length > 0, 'Should have disable');
-  });
-
-  it('should include show_toast with level and duration', () => {
+  it('should include show_toast with level', () => {
     const toasts = getActionsOfType(fixtureMap['ui-actions'], 'show_toast');
     assert.ok(toasts.length > 0);
     const withLevel = toasts.filter((t) => t.level);

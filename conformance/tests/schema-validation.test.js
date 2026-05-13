@@ -46,7 +46,7 @@ describe('ACP v1 Schema', () => {
   it('should define both client and server message types', () => {
     const types = getMessageTypes();
     assert.ok(types.client.length >= 7, `Expected >= 7 client types, got ${types.client.length}`);
-    assert.ok(types.server.length >= 6, `Expected >= 6 server types, got ${types.server.length}`);
+    assert.ok(types.server.length >= 5, `Expected >= 5 server types, got ${types.server.length}`);
   });
 
   it('should reject messages without a type field', () => {

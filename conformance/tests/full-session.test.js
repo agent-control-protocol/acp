@@ -2,7 +2,7 @@
  * Full Session Replay Tests
  *
  * Validates a complete session that exercises all action types in a realistic
- * flow: handshake -> chat -> navigate -> fill -> confirm -> toast.
+ * flow: handshake -> chat -> navigate -> set_field -> confirm -> show_toast.
  */
 
 import { describe, it, before, after } from 'node:test';
@@ -80,10 +80,7 @@ describe('Full session replay', () => {
     assert.equal(errors.length, 0, `Invalid client messages: ${JSON.stringify(errors, null, 2)}`);
   });
 
-  it('should include chat_token streaming followed by a final chat message', () => {
-    const tokens = fixture.steps.filter((s) => s.message?.type === 'chat_token');
-    assert.ok(tokens.length >= 2, 'Should have at least 2 streaming tokens');
-
+  it('should include at least one final chat message', () => {
     const chats = fixture.steps.filter((s) => s.message?.type === 'chat' && s.message?.final === true);
     assert.ok(chats.length >= 1, 'Should have at least 1 final chat message');
   });
@@ -136,7 +133,7 @@ describe('Full session replay', () => {
     }
 
     // The full session should cover the major action categories
-    const required = ['navigate', 'fill', 'select', 'highlight', 'scroll_to', 'focus', 'click', 'ask_confirm', 'show_toast'];
+    const required = ['navigate', 'set_field', 'click', 'ask_confirm', 'show_toast'];
     const missing = required.filter((a) => !actionTypes.has(a));
     assert.equal(missing.length, 0, `Missing actions in full session: ${missing.join(', ')}`);
   });
