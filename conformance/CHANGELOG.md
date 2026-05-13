@@ -5,6 +5,17 @@ All notable changes to `@acprotocol/conformance` will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.3] - 2026-05-12
+
+### Changed
+
+- `bin/check-conformance.js`: replaced legacy `chat_token` streaming check with the v2 `chat` + `delta:true` model (matches protocol v1.1 streaming unification).
+- Test manifest instruction now mentions `set_field` instead of the retired `fill` verb.
+
+### Removed
+
+- Dead-code references to `chat_token` in the response-content check.
+
 ## [2.0.2] - 2026-05-12
 
 ### Added

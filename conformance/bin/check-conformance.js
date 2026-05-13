@@ -77,7 +77,7 @@ const TEST_MANIFEST = {
   persona: {
     name: 'Aria',
     role: 'assistant',
-    instructions: 'You help manage contacts. When asked to fill a form, use the fill action on fields. Always use UI commands, do not just describe what you would do.',
+    instructions: 'You help manage contacts. When asked to fill the form, use set_field actions to populate each field. Always use UI commands, do not just describe what you would do.',
   },
 };
 
@@ -303,13 +303,13 @@ async function run() {
 
     // ---- Check: server sent response content ----
     const hasContent = responseMessages.some(m =>
-      m.type === 'chat' || m.type === 'chat_token' || m.type === 'command'
+      m.type === 'chat' || m.type === 'command'
     );
     if (hasContent) {
       const types = [...new Set(responseMessages.map(m => m.type))];
       pass('response_content', `Server responded with: ${types.join(', ')}`);
     } else {
-      fail('response_content', 'Server sent no chat, chat_token, or command after text');
+      fail('response_content', 'Server sent no chat or command after text');
     }
 
     // ---- Check: commands received (warn if none) ----
@@ -409,13 +409,15 @@ async function run() {
     }
 
     // ---- Check: chat streaming correctness ----
-    const chatTokens = responseMessages.filter(m => m.type === 'chat_token');
+    // In ACP v2, streaming uses chat messages with delta:true; the final
+    // message has final:true (the legacy chat_token type was removed in v1.1).
+    const deltaChats = responseMessages.filter(m => m.type === 'chat' && m.delta === true);
     const finalChats = responseMessages.filter(m => m.type === 'chat' && m.final === true);
 
-    if (chatTokens.length > 0 && finalChats.length === 0) {
-      warn('chat_streaming', `${chatTokens.length} chat_tokens sent but no final chat message with final:true`);
-    } else if (chatTokens.length > 0 && finalChats.length > 0) {
-      pass('chat_streaming', `Streaming: ${chatTokens.length} tokens + final chat message`);
+    if (deltaChats.length > 0 && finalChats.length === 0) {
+      warn('chat_streaming', `${deltaChats.length} streaming chat deltas sent but no final chat message with final:true`);
+    } else if (deltaChats.length > 0 && finalChats.length > 0) {
+      pass('chat_streaming', `Streaming: ${deltaChats.length} deltas + final chat message`);
     } else if (finalChats.length > 0) {
       pass('chat_streaming', 'Non-streaming chat: final message sent directly');
     }
