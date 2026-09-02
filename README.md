@@ -1,3 +1,4 @@
+<!-- curadoria: kind="entry" keywords="[visao,, tese,, arquitetura,, vocall]" summary="Entrada do repo: problema, tabela comparativa, manifesto exemplo, implementacoes em producao" -->
 # ACP -- Agent Control Protocol
 
 **ACP lets AI agents control any existing application through a structured protocol -- no vision models, no DOM scraping, no guessing.**

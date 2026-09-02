@@ -1,3 +1,10 @@
+---
+title: Contributor Covenant Code of Conduct
+kind: other
+keywords: [repo]
+summary: Codigo de conduta padrao com contato conduct@primoia.ai
+confirmed-useful: 2026-09-02
+---
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge

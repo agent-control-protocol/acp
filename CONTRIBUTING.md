@@ -1,3 +1,10 @@
+---
+title: Contributing to ACP
+kind: other
+keywords: [repo,, gate]
+summary: Mudanca de spec exige racional, analise de compatibilidade e fixture
+confirmed-useful: 2026-09-02
+---
 # Contributing to ACP
 
 ACP is an open protocol and we welcome contributions from the community. Whether you are fixing a typo, proposing a new action type, or improving the conformance test suite, your input helps make ACP better for everyone.

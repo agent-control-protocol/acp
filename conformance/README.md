@@ -1,3 +1,4 @@
+<!-- curadoria: kind="entry" keywords="[gate,, e2e,, arquitetura]" summary="Como validar uma implementacao e o que "ACP-compliant" significa" -->
 # ACP Conformance Test Suite
 
 This directory contains the conformance test suite for the Agent Control Protocol (ACP). Use it to validate that your implementation correctly speaks ACP.

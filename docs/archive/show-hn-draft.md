@@ -1,3 +1,13 @@
+---
+title: Show HN Draft -- ACP (Agent Control Protocol)
+kind: other
+status: archived
+keywords: [visao,, tese,, vocall,, copiloto]
+summary: Rascunho de lancamento no HN, posicionamento contra MCP, A2A, AG-UI
+archived: 2026-09-02
+archived-why: leitor
+superseded-by: README.md:22-57 e a versao viva do mesmo posicionamento
+---
 # Show HN Draft -- ACP (Agent Control Protocol)
 
 ---

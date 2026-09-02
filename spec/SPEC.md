@@ -1,3 +1,9 @@
+---
+title: Agent Control Protocol (ACP) Specification
+kind: spec/plan
+keywords: [arquitetura,, seguranca,, gate]
+summary: Spec formal: transporte, ciclo, 8 acoes, 15 campos, erros, conformidade
+---
 # Agent Control Protocol (ACP) Specification
 
 **Version:** 2.0
