@@ -1,7 +1,7 @@
 ---
 title: Security Policy
 kind: standard
-keywords: [seguranca,, repo]
+keywords: [seguranca, repo]
 summary: Canal security@primoia.ai, SLA 48h/7d/30d, escopo schema mais spec mais conformance
 ---
 # Security Policy

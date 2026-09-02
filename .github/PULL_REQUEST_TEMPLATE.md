@@ -1,7 +1,7 @@
 ---
 title: PULL_REQUEST_TEMPLATE
 kind: other
-keywords: [repo,, gate]
+keywords: [repo, gate]
 summary: Checklist de PR: racional, compatibilidade, fixture de conformidade, schema
 confirmed-useful: 2026-09-02
 ---

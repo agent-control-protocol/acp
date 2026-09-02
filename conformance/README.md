@@ -1,100 +1,46 @@
-<!-- curadoria: kind="entry" keywords="[gate,, e2e,, arquitetura]" summary="Como validar uma implementacao e o que "ACP-compliant" significa" -->
+<!-- curadoria: kind="entry" keywords="[gate, e2e, arquitetura]" summary="Suite de conformidade ACP: 4 grupos de testes, fixtures 01-06 e o checker de servidor vivo" confirmed-useful="2026-09-02" -->
 # ACP Conformance Test Suite
 
-This directory contains the conformance test suite for the Agent Control Protocol (ACP). Use it to validate that your implementation correctly speaks ACP.
-
-## What the Suite Tests
-
-The conformance suite covers three areas:
-
-- **Schema compliance.** Every message your implementation sends or receives must conform to the ACP JSON Schema definitions. The suite validates message structure, required fields, type constraints, and format rules (such as ISO 8601 timestamps and UUID session identifiers).
-
-- **Message exchange sequences.** ACP defines specific handshake and lifecycle sequences (e.g., `config` / `manifest`, session establishment, graceful disconnect). The suite replays these sequences against your implementation and verifies that responses arrive in the correct order with the expected content.
-
-- **Action coverage.** Each action type defined in the spec (`navigate`, `set_field`, `clear`, `click`, `show_toast`, `ask_confirm`, `open_modal`, `close_modal`) has dedicated test cases that exercise both the happy path and common error conditions. The suite verifies that your implementation handles action requests, emits proper action results, and rejects malformed payloads with appropriate error codes.
+Validates that an implementation speaks the Agent Control Protocol: message schema, handshake, the
+eight UI actions and a full session. 41 tests, all green as of 2026-09-02.
 
 ## Prerequisites
 
-- Node.js 20 or later
-- npm 10 or later
+Node.js 20 or later, npm 10 or later. `npm install` once.
 
-## Installation
-
-```bash
-npm install
-```
-
-## Running the Full Suite
+## Run
 
 ```bash
-npm test
+npm test                 # node --test tests/**/*.test.js (package.json:26)
+npm run test:schema      # tests/schema-validation.test.js
+npm run test:handshake   # tests/handshake.test.js
+npm run test:actions     # tests/actions.test.js
+npm run test:session     # tests/full-session.test.js
 ```
 
-This runs all conformance tests: schema validation, handshake sequences, action coverage, and session lifecycle.
+## Check a live server
 
-## Running Individual Test Groups
-
-You can run specific subsets of the suite:
+The suite itself runs against fixtures. To exercise a running ACP server, use the checker; the URL is a
+positional argument and the token an option (`bin/check-conformance.js:14-16,27-30`):
 
 ```bash
-# Schema validation only
-npm run test:schema
-
-# Handshake and connection lifecycle
-npm run test:handshake
-
-# Action request/response coverage
-npm run test:actions
-
-# Session management (create, resume, destroy)
-npm run test:session
+node bin/check-conformance.js ws://localhost:12900/connect
+node bin/check-conformance.js ws://localhost:12900/connect --token=abc --timeout=15000 --json
 ```
 
-## Testing Your Implementation
+It walks the whole cycle: connect, config, manifest, idle, text, thinking, commands and results, idle.
+There is no `ACP_TARGET_URL` or `ACP_AUTH_TOKEN` environment variable.
 
-By default, the suite validates against its built-in fixture data. To test a live ACP implementation, point the contract server at your engine by setting the `ACP_TARGET_URL` environment variable:
+## Fixtures
 
-```bash
-ACP_TARGET_URL=ws://localhost:12900/connect npm test
-```
+Flat files in `fixtures/`, one per scenario: `01-handshake.json`, `02-fill-actions.json`,
+`03-nav-actions.json`, `04-ui-actions.json`, `05-modal-actions.json`, `06-full-session.json`.
+A fixture is either a single message object (schema tests) or an ordered array of messages (sequence tests).
+Schemas come from `../spec/acp-v2.json`; the validator is `lib/schema-validator.js`.
 
-The suite will open a WebSocket connection to the specified URL, run the full protocol exchange, and report which tests pass or fail.
+## What "ACP-compliant" means
 
-If your engine requires authentication or custom headers, you can supply them via:
-
-```bash
-ACP_TARGET_URL=ws://localhost:12900/connect \
-ACP_AUTH_TOKEN=your-token-here \
-npm test
-```
-
-## Fixture Format
-
-Test fixtures live in subdirectories organized by test group:
-
-```
-conformance/
-  fixtures/
-    schema/          # Individual message samples for schema validation
-    handshake/       # Ordered sequences of messages for lifecycle tests
-    actions/         # Action-specific request/response pairs
-    session/         # Session create, resume, and destroy sequences
-```
-
-Each fixture is a JSON file containing either:
-
-- A **single message object** (for schema tests), with a top-level `"type"` field indicating the message type.
-- An **ordered array of message objects** (for sequence tests), representing the expected exchange from first message to last.
-
-Fixture files are named descriptively, e.g., `01-handshake.json`, `02-fill-actions.json`, `03-nav-actions.json`, `04-ui-actions.json`, `05-modal-actions.json`, `06-full-session.json`.
-
-## What "ACP-Compliant" Means
-
-An implementation is considered ACP-compliant when it passes **all** schema and conformance tests in this suite without modifications to the test fixtures. Specifically:
-
-1. Every outbound message conforms to the ACP JSON Schema.
-2. The implementation correctly executes all handshake and session lifecycle sequences.
-3. All defined action types are supported and produce correct results.
-4. Malformed or invalid messages are rejected with the appropriate error codes as defined in the spec.
-
-Partial compliance (e.g., passing schema tests but failing action tests) should be documented clearly if you choose to advertise ACP support.
+An implementation is ACP-compliant when it passes every test in this suite without changing the fixtures:
+outbound messages conform to the schema, handshake and session sequences complete in order, all eight
+action types produce correct results, and malformed messages are rejected with the spec's error codes.
+Partial compliance must be stated as such.

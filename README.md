@@ -1,4 +1,4 @@
-<!-- curadoria: kind="entry" keywords="[visao,, tese,, arquitetura,, vocall]" summary="Entrada do repo: problema, tabela comparativa, manifesto exemplo, implementacoes em producao" -->
+<!-- curadoria: kind="entry" keywords="[visao, tese, arquitetura, vocall]" summary="**ACP lets AI agents control any existing application through a structured protocol -- no vision models, no DOM scraping" confirmed-useful="2026-09-02" -->
 # ACP -- Agent Control Protocol
 
 **ACP lets AI agents control any existing application through a structured protocol -- no vision models, no DOM scraping, no guessing.**
@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Spec Version](https://img.shields.io/badge/spec-v2.0-green.svg)](spec/acp-v2.json)
 [![Status](https://img.shields.io/badge/status-draft-orange.svg)](spec/SPEC.md)
-[![Tests](https://img.shields.io/badge/tests-195_passing-brightgreen.svg)](https://github.com/agent-control-protocol/acp-server)
+[![Conformance](https://img.shields.io/badge/conformance-41_tests-brightgreen.svg)](conformance/)
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=6nWLXdYwKUs">

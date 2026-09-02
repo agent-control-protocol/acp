@@ -1,7 +1,7 @@
 ---
 title: Contributing to ACP
 kind: other
-keywords: [repo,, gate]
+keywords: [repo, gate]
 summary: Mudanca de spec exige racional, analise de compatibilidade e fixture
 confirmed-useful: 2026-09-02
 ---
